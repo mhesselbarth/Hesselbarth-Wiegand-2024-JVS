@@ -19,13 +19,14 @@ library(sf)
 library(spatstat.geom)
 library(spatstat.random)
 library(stringr)
+library(suppoRt)
 library(terra)
 library(tibble)
 
 #### Init simulation environment ####
 
 # run `file.path(R.home("bin"), "Rscript")`
-rscript_path <- ""
+rscript_path <- "/opt/sw/rev/21.12/haswell/gcc-9.3.0/r-4.1.1-kwp4zk/rlib/R/bin/Rscript"
 
 # number of columns and rows for neutral landscape
 number_coloumns <- 50 

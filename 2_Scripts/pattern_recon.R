@@ -128,26 +128,25 @@ foo_hpc <- function(fract_dim, n, association_strength, n_random) {
 
 globals <- c("number_coloumns", "number_rows", "resolution", # nlm_fbm
              "number_points", # create_simulation_pattern
-             "max_runs", "comp_fast", "no_change", # reconstruct_pattern
-             "create_simulation_pattern", "create_simulation_species") # helper functions
+             # "n_random", # randomize_raster
+             "create_simulation_pattern", "create_simulation_species", "detect_habitat_associations") # helper functions
 
-pattern_recon <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment, 
-                                     global_objects = globals, jobname = "pattern_recon",
-                                     nodes = nrow(df_experiment), cpus_per_node = 1, 
-                                     slurm_options = list("partition" = "medium",
-                                                          "time" = "12:00:00", ## hh:mm::ss
-                                                          "mem-per-cpu" = "2G"),
-                                     pkgs = c("dplyr", "maptools", "mobsim", "NLMR", "sf", "spatstat.geom", 
-                                              "spatstat.random", "stringr", "terra"),
-                                     rscript_path = rscript_path, submit = FALSE)
+sbatch_recon <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment, 
+                                    global_objects = globals, jobname = "pattern_recon",
+                                    nodes = nrow(df_experiment), cpus_per_node = 1, 
+                                    slurm_options = list("partition" = "medium",
+                                                         "time" = "06:00:00"),
+                                    pkgs = c("dplyr", "maptools", "NLMR", "sf", "spatstat.geom", # mobsim
+                                             "spatstat.random", "stringr", "terra"),
+                                    rscript_path = rscript_path, submit = FALSE)
 
 #### Collect results #### 
 
-suppoRt::rslurm_missing(x = pattern_recon)
+suppoRt::rslurm_missing(x = sbatch_recon)
 
-cv_result <- rslurm::get_slurm_out(pattern_recon)
+pattern_recon <- rslurm::get_slurm_out(sbatch_recon, outtype = "table")
 
 suppoRt::save_rds(object = pattern_recon, filename = "pattern_recon.rds",
                   path = "02_Data/", overwrite = FALSE)
 
-rslurm::cleanup_files(pattern_recon)
+rslurm::cleanup_files(sbatch_recon)

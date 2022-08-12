@@ -93,23 +93,22 @@ foo_hpc <- function(fract_dim, n, association_strength, n_random) {
 globals <- c("number_coloumns", "number_rows", "resolution", # nlm_fbm
              "number_points", # create_simulation_pattern
              # "n_random", # randomize_raster
-             "create_simulation_pattern", "create_simulation_species") # helper functions
+             "create_simulation_pattern", "create_simulation_species", "detect_habitat_associations") # helper functions
 
-habitat_random <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment, 
-                                 global_objects = globals, jobname = "habitat_random",
-                                 nodes = nrow(df_experiment), cpus_per_node = 1, 
-                                 slurm_options = list("partition" = "medium",
-                                                      "time" = "12:00:00", ## hh:mm::ss
-                                                      "mem-per-cpu" = "2G"),
-                                 pkgs = c("dplyr", "maptools", "mobsim", "NLMR", "sf", "spatstat.geom", 
-                                          "spatstat.random", "stringr", "terra"),
-                                 rscript_path = rscript_path, submit = FALSE)
+sbatch_habitat <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment, 
+                                      global_objects = globals, jobname = "habitat_random",
+                                      nodes = nrow(df_experiment), cpus_per_node = 1, 
+                                      slurm_options = list("partition" = "medium",
+                                                           "time" = "06:00:00"),
+                                      pkgs = c("dplyr", "maptools", "NLMR", "sf", "spatstat.geom", # mobsim
+                                               "spatstat.random", "stringr", "terra"),
+                                      rscript_path = rscript_path, submit = FALSE)
 
 #### Collect results #### 
 
-suppoRt::rslurm_missing(x = habitat_random)
+suppoRt::rslurm_missing(x = sbatch_habitat)
 
-cv_result <- rslurm::get_slurm_out(habitat_random)
+habitat_random <- rslurm::get_slurm_out(sbatch_habitat, outtype = "table")
 
 suppoRt::save_rds(object = habitat_random, filename = "habitat_random.rds",
                   path = "02_Data/", overwrite = FALSE)

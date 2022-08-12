@@ -121,25 +121,24 @@ foo_hpc <- function(fract_dim, n, association_strength, n_random) {
 globals <- c("number_coloumns", "number_rows", "resolution", # nlm_fbm
              "number_points", # create_simulation_pattern
              # "n_random", # randomize_raster
-             "create_simulation_pattern", "create_simulation_species") # helper functions
+             "create_simulation_pattern", "create_simulation_species", "detect_habitat_associations") # helper functions
 
-gamma_test <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment, 
-                                  global_objects = globals, jobname = "gamma_test",
-                                  nodes = nrow(df_experiment), cpus_per_node = 1, 
-                                  slurm_options = list("partition" = "medium",
-                                                       "time" = "12:00:00", ## hh:mm::ss
-                                                       "mem-per-cpu" = "2G"),
-                                  pkgs = c("dplyr", "maptools", "mobsim", "NLMR", "sf", "spatstat.geom", 
-                                           "spatstat.random", "stringr", "terra"),
-                                  rscript_path = rscript_path, submit = FALSE)
+sbatch_gamma <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment, 
+                                    global_objects = globals, jobname = "gamma_test",
+                                    nodes = nrow(df_experiment), cpus_per_node = 1, 
+                                    slurm_options = list("partition" = "medium",
+                                                         "time" = "06:00:00"),
+                                    pkgs = c("dplyr", "maptools", "NLMR", "sf", "spatstat.geom", # mobsim
+                                             "spatstat.random", "stringr", "terra"),
+                                    rscript_path = rscript_path, submit = FALSE)
 
 #### Collect results #### 
 
-suppoRt::rslurm_missing(x = gamma_test)
+suppoRt::rslurm_missing(x = sbatch_gamma)
 
-cv_result <- rslurm::get_slurm_out(gamma_test)
+gamma_test <- rslurm::get_slurm_out(sbatch_gamma, outtype = "table")
 
 suppoRt::save_rds(object = gamma_test, filename = "gamma_test.rds",
-                  path = "02_Data/", overwrite = FALSE)
+                  path = "3_Data/", overwrite = FALSE)
 
-rslurm::cleanup_files(gamma_test)
+rslurm::cleanup_files(sbatch_gamma)

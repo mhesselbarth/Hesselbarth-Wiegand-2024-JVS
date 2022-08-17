@@ -120,7 +120,6 @@ foo_hpc <- function(fract_dim, n, association_strength, n_random) {
 
 globals <- c("number_coloumns", "number_rows", "resolution", # nlm_fbm
              "number_points", # create_simulation_pattern
-             # "n_random", # randomize_raster
              "create_simulation_pattern", "create_simulation_species", "detect_habitat_associations") # helper functions
 
 sbatch_gamma <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment, 
@@ -128,7 +127,7 @@ sbatch_gamma <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment,
                                     nodes = nrow(df_experiment), cpus_per_node = 1, 
                                     slurm_options = list("partition" = "medium",
                                                          "time" = "06:00:00"),
-                                    pkgs = c("dplyr", "maptools", "NLMR", "sf", "spatstat.geom", # mobsim
+                                    pkgs = c("dplyr", "maptools", "NLMR", "sf", "shar", "spatstat.geom", # mobsim
                                              "spatstat.random", "stringr", "terra"),
                                     rscript_path = rscript_path, submit = FALSE)
 

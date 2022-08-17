@@ -92,7 +92,6 @@ foo_hpc <- function(fract_dim, n, association_strength, n_random) {
 
 globals <- c("number_coloumns", "number_rows", "resolution", # nlm_fbm
              "number_points", # create_simulation_pattern
-             # "n_random", # randomize_raster
              "create_simulation_pattern", "create_simulation_species", "detect_habitat_associations") # helper functions
 
 sbatch_habitat <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment, 
@@ -100,7 +99,7 @@ sbatch_habitat <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment,
                                       nodes = nrow(df_experiment), cpus_per_node = 1, 
                                       slurm_options = list("partition" = "medium",
                                                            "time" = "06:00:00"),
-                                      pkgs = c("dplyr", "maptools", "NLMR", "sf", "spatstat.geom", # mobsim
+                                      pkgs = c("dplyr", "maptools", "NLMR", "sf", "shar", "spatstat.geom", # mobsim
                                                "spatstat.random", "stringr", "terra"),
                                       rscript_path = rscript_path, submit = FALSE)
 
@@ -111,6 +110,6 @@ suppoRt::rslurm_missing(x = sbatch_habitat)
 habitat_random <- rslurm::get_slurm_out(sbatch_habitat, outtype = "table")
 
 suppoRt::save_rds(object = habitat_random, filename = "habitat_random.rds",
-                  path = "02_Data/", overwrite = FALSE)
+                  path = "3_Data/", overwrite = FALSE)
 
-rslurm::cleanup_files(habitat_random)
+rslurm::cleanup_files(sbatch_habitat)

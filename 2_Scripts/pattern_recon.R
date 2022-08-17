@@ -48,7 +48,7 @@ foo_hpc <- function(fract_dim, n, association_strength, n_random) {
   
   # randomize pattern using pattern reconstruction
   random_species_1 <- shar::reconstruct_pattern(pattern = species_1, n_random = n_random,
-                                                max_runs = max_runs, fitting = FALSE, 
+                                                max_runs = max_runs, method = "homo", 
                                                 comp_fast = comp_fast, no_change = no_change,
                                                 verbose = FALSE)
   
@@ -67,7 +67,7 @@ foo_hpc <- function(fract_dim, n, association_strength, n_random) {
   
   # randomize pattern using pattern reconstruction
   random_species_2 <- shar::reconstruct_pattern(pattern = species_2, n_random = n_random,
-                                                max_runs = max_runs, fitting = TRUE, 
+                                                max_runs = max_runs, method = "cluster",
                                                 comp_fast = comp_fast, no_change = no_change,
                                                 verbose = FALSE)
   
@@ -86,7 +86,7 @@ foo_hpc <- function(fract_dim, n, association_strength, n_random) {
   
   # randomize pattern using pattern reconstruction
   random_species_3 <- shar::reconstruct_pattern(pattern = species_3, n_random = n_random,
-                                                max_runs = max_runs, fitting = FALSE, 
+                                                max_runs = max_runs, method = "homo", 
                                                 comp_fast = comp_fast, no_change = no_change,
                                                 verbose = FALSE)
   
@@ -105,7 +105,7 @@ foo_hpc <- function(fract_dim, n, association_strength, n_random) {
   
   # randomize pattern using pattern reconstruction
   random_species_4 <- shar::reconstruct_pattern(pattern = species_4, n_random = n_random,
-                                                max_runs = max_runs, fitting = TRUE, 
+                                                max_runs = max_runs, method = "cluster",
                                                 comp_fast = comp_fast, no_change = no_change,
                                                 verbose = FALSE)
   
@@ -128,15 +128,15 @@ foo_hpc <- function(fract_dim, n, association_strength, n_random) {
 
 globals <- c("number_coloumns", "number_rows", "resolution", # nlm_fbm
              "number_points", # create_simulation_pattern
-             # "n_random", # randomize_raster
+             "max_runs", "comp_fast", "no_change", # reconstruct_pattern
              "create_simulation_pattern", "create_simulation_species", "detect_habitat_associations") # helper functions
 
 sbatch_recon <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment, 
                                     global_objects = globals, jobname = "pattern_recon",
                                     nodes = nrow(df_experiment), cpus_per_node = 1, 
                                     slurm_options = list("partition" = "medium",
-                                                         "time" = "06:00:00"),
-                                    pkgs = c("dplyr", "maptools", "NLMR", "sf", "spatstat.geom", # mobsim
+                                                         "time" = "48:00:00"),
+                                    pkgs = c("dplyr", "maptools", "NLMR", "sf", "shar", "spatstat.geom", # mobsim
                                              "spatstat.random", "stringr", "terra"),
                                     rscript_path = rscript_path, submit = FALSE)
 
@@ -147,6 +147,6 @@ suppoRt::rslurm_missing(x = sbatch_recon)
 pattern_recon <- rslurm::get_slurm_out(sbatch_recon, outtype = "table")
 
 suppoRt::save_rds(object = pattern_recon, filename = "pattern_recon.rds",
-                  path = "02_Data/", overwrite = FALSE)
+                  path = "3_Data/", overwrite = FALSE)
 
 rslurm::cleanup_files(sbatch_recon)

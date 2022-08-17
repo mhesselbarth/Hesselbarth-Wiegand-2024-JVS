@@ -11,7 +11,7 @@
 # Packages
 library(dplyr)
 library(maptools)
-library(mobsim)
+# library(mobsim)
 library(NLMR)
 library(rslurm)
 library(shar)

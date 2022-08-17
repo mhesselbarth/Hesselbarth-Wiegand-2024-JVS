@@ -4,3 +4,4 @@
 .Ruserdata
 *.pdf
 *.rds
+_rslurm*/

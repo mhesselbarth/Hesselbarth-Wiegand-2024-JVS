@@ -10,31 +10,22 @@
 
 source("1_Functions/setup.R")
 
-source("1_Functions/create_simulation_pattern.R")
-source("1_Functions/create_simulation_species.R")
 source("1_Functions/detect_habitat_associations.R")
 
-#### Create simulation experiment parameters ####
+df_experiment <-  readRDS("3_Data/df_experiment.rds")
 
-df_experiment <- expand.grid(association_strength = association_strength, fract_dim = fract_dim,
-                             n_random = n_random) %>% 
-  dplyr::slice(rep(x = 1:dplyr::n(), each = iterations)) %>% 
-  tibble::tibble()
+simulation_habitat_list <- readRDS("3_Data/simulation_habitat_list.rds")
+
+simulation_pattern_list <- readRDS("3_Data/simulation_pattern_list.rds")
 
 #### Define HPC function ####
 
-foo_hpc <- function(fract_dim, association_strength, n_random) {
+foo_hpc <- function(fract_dim, association_strength, n_random, row_counter) {
   
-  # create simulation landscape with 5 discrete classes
-  simulation_habitat <- NLMR::nlm_fbm(ncol = number_coloumns, nrow = number_rows, resolution = resolution,
-                                      fract_dim = fract_dim, verbose = FALSE, cPrintlevel = 0) %>% 
-    terra::rast() %>% 
-    shar::classify_habitats(n = n)
+  # get simulation data
+  simulation_habitat <- terra::rast(simulation_habitat_list[[row_counter]])
   
-  # create simulation pattern with 4 species  
-  simulation_pattern <- create_simulation_pattern(raster = simulation_habitat,
-                                                  number_points = number_points,
-                                                  association_strength = association_strength)
+  simulation_pattern <- simulation_pattern_list[[row_counter]]
   
   # name of species include type of association
   names_species <- as.character(unique(simulation_pattern$marks$species))
@@ -52,7 +43,7 @@ foo_hpc <- function(fract_dim, association_strength, n_random) {
   
   # get habitat associations
   associations_species_1 <- shar::results_habitat_association(pattern = random_species_1, raster = simulation_habitat,
-                                                              verbose = FALSE)
+                                                              verbose = TRUE)
   
   # count correct/false detections of species-habitat associations
   detection_species_1 <- detect_habitat_associations(input = associations_species_1, 
@@ -69,7 +60,7 @@ foo_hpc <- function(fract_dim, association_strength, n_random) {
   
   # get habitat associations
   associations_species_2 <- shar::results_habitat_association(pattern = random_species_2, raster = simulation_habitat,
-                                                              verbose = FALSE)
+                                                              verbose = TRUE)
   
   # count correct/false detections of species-habitat associations
   detection_species_2 <- detect_habitat_associations(input = associations_species_2, 
@@ -86,7 +77,7 @@ foo_hpc <- function(fract_dim, association_strength, n_random) {
   
   # get habitat associations
   associations_species_3 <- shar::results_habitat_association(pattern = random_species_3, raster = simulation_habitat,
-                                                              verbose = FALSE)
+                                                              verbose = TRUE)
   
   # count correct/false detections of species-habitat associations
   detection_species_3 <- detect_habitat_associations(input = associations_species_3, 
@@ -103,32 +94,31 @@ foo_hpc <- function(fract_dim, association_strength, n_random) {
   
   # get habitat associations
   associations_species_4 <- shar::results_habitat_association(pattern = random_species_4, raster = simulation_habitat,
-                                                              verbose = FALSE)
+                                                              verbose = TRUE)
   
   # count correct/false detections of species-habitat associations
   detection_species_4 <- detect_habitat_associations(input = associations_species_4, 
                                                      species_type = names_species[4])
   
   # combine results of current association strength to one data frame
-  dplyr::bind_rows(detection_species_1, detection_species_2, detection_species_3, detection_species_4) %>% 
-    dplyr::mutate(.before = correct, species = 1:4, fract_dim = fract_dim, n = n,
-                  association_strength = association_strength, n_random = n_random)
+  dplyr::bind_rows("1" = detection_species_1, "2" = detection_species_2, 
+                   "3" = detection_species_3, "4" = detection_species_4, .id = "species") %>% 
+    dplyr::mutate(association_strength = association_strength, fract_dim = fract_dim,
+                  n_random = n_random, row_counter =  row_counter, .before = correct)
   
 }
 
 #### Submit HPC ####
 
-globals <- c("number_coloumns", "number_rows", "resolution", "n", # nlm_fbm
-             "number_points", # create_simulation_pattern
-             "create_simulation_pattern", "create_simulation_species", "detect_habitat_associations") # helper functions
+globals <- c("simulation_habitat_list", "simulation_pattern_list", # sim data
+             "detect_habitat_associations") # helper functions
 
 sbatch_gamma <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment, 
                                     global_objects = globals, jobname = "gamma_test",
                                     nodes = nrow(df_experiment), cpus_per_node = 1, 
                                     slurm_options = list("partition" = "medium",
                                                          "time" = "06:00:00"),
-                                    pkgs = c("dplyr", "maptools", "NLMR", "sf", "shar", "spatstat.geom", # mobsim
-                                             "spatstat.random", "stringr", "terra"),
+                                    pkgs = c("dplyr", "shar", "spatstat.geom", "stringr", "terra"),
                                     rscript_path = rscript_path, submit = FALSE)
 
 #### Collect results #### 

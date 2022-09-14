@@ -122,10 +122,8 @@ ggplot_false_total <- cowplot::plot_grid(ggplot_false_total, cowplot::get_legend
 
 #### Save ggplots
 
-suppoRt::save_ggplot(plot = ggplot_correct_total, filename = "4_Figures/Fig-2.pdf", overwrite = TRUE, 
-                     dpi = dpi, height = width, width = height, units = units)
+suppoRt::save_ggplot(plot = ggplot_correct_total, filename = "4_Figures/Fig-3.pdf", overwrite = FALSE, 
+                     dpi = dpi, height = width * 0.75, width = height, units = units)
 
-suppoRt::save_ggplot(plot = ggplot_false_total, filename = "4_Figures/Fig-A2.pdf", overwrite = TRUE, 
-                     dpi = dpi, height = width, width = height, units = units)
-
-
+suppoRt::save_ggplot(plot = ggplot_false_total, filename = "4_Figures/Fig-A2.pdf", overwrite = FALSE, 
+                     dpi = dpi, height = width * 0.75, width = height, units = units)

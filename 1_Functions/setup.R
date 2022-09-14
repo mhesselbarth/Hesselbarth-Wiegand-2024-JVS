@@ -2,26 +2,24 @@
 ##    Author: Maximilian H.K. Hesselbarth        ##
 ##    Department of Ecosystem Modelling          ##
 ##    University of Goettingen                   ##
-##    maximilian.hesselbarth@uni-goettingen.de   ##
+##    mhk.hesselbarth@gmail.com   ##
 ##    www.github.com/mhesselbarth                ##
 ###################################################
 
 #### Load libraries ####
 
 # Packages
-library(dplyr)
+library(cowplot)
 library(maptools)
-# library(mobsim)
 library(NLMR)
 library(rslurm)
 library(shar)
 library(sf)
 library(spatstat.geom)
 library(spatstat.random)
-library(stringr)
 library(suppoRt)
 library(terra)
-library(tibble)
+library(tidyverse)
 
 #### Init simulation environment ####
 
@@ -46,13 +44,13 @@ number_points <- 100
 n_random <- c(19, 39, 199)
 
 # number of habitats
-n <- c(3, 5, 10)
+n <- 5 # c(3, 5, 10)
 
 # association strength sequence
 association_strength <- seq(from = 0.05, to = 1, by = 0.15)
 
 # number of simulation runs
-iterations <- 10
+iterations <- 25
 
 # number of iterations pattern reconstruction
 max_runs <- 10000
@@ -63,4 +61,11 @@ comp_fast <- 0
 # threshold to stop reconstruction if no change occurred
 no_change <- 5000
 
+# ggplot settings
+dpi <- 900
 
+height <- 297
+
+width <- 210
+
+units <- "mm"

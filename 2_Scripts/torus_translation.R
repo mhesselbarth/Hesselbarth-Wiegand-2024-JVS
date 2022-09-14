@@ -1,12 +1,12 @@
-###################################################
+##-----------------------------------------------##
 ##    Author: Maximilian H.K. Hesselbarth        ##
 ##    Department of Ecosystem Modelling          ##
 ##    University of Goettingen                   ##
-##    maximilian.hesselbarth@uni-goettingen.de   ##
+##    mhk.hesselbarth@gmail.com                  ##
 ##    www.github.com/mhesselbarth                ##
-###################################################
+##-----------------------------------------------##
 
-# Purpose of script: Simulation study of habitat associations using habitat randomization
+# Purpose of script: Simulation study of habitat associations using torus translation
 
 source("1_Functions/setup.R")
 
@@ -16,14 +16,14 @@ source("1_Functions/detect_habitat_associations.R")
 
 #### Create simulation experiment parameters ####
 
-df_experiment <- expand.grid(association_strength = association_strength, fract_dim = fract_dim, n = n, 
+df_experiment <- expand.grid(association_strength = association_strength, fract_dim = fract_dim, 
                              n_random = n_random) %>% 
   dplyr::slice(rep(x = 1:dplyr::n(), each = iterations)) %>% 
   tibble::tibble()
 
 #### Define HPC function ####
 
-foo_hpc <- function(fract_dim, n, association_strength, n_random) {
+foo_hpc <- function(fract_dim, association_strength, n_random) {
   
   # create simulation landscape with 5 discrete classes
   simulation_habitat <- NLMR::nlm_fbm(ncol = number_coloumns, nrow = number_rows, resolution = resolution,
@@ -94,7 +94,7 @@ foo_hpc <- function(fract_dim, n, association_strength, n_random) {
 
 #### Submit HPC ####
 
-globals <- c("number_coloumns", "number_rows", "resolution", # nlm_fbm
+globals <- c("number_coloumns", "number_rows", "resolution", "n", # nlm_fbm
              "number_points", # create_simulation_pattern
              "create_simulation_pattern", "create_simulation_species", "detect_habitat_associations") # helper functions
 

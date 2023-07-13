@@ -1,8 +1,20 @@
-
-# R-Hesselbarth-Wiegand
-
 <!-- badges: start -->
+
 <!-- badges: end -->
 
-The goal of R-Hesselbarth-Wiegand is to ...
+## A simulation study comparing common methods to analyses species-habitat associations of plants
+### Hesselbarth & Wiegand (under review)
 
+Code repository for all `R` scripts used in **Hesselbarth, M.H.K., Wiegand, K., (under review). A simulation study comparing common methods to analyses species-habitat associations of plants. JOURNAL NAME**
+
+The repository contains the following folders (see README.txt in each folder for sub-directories):
+- `/1_Functions/`
+  - Folder containing `R` helper functions and setup files
+- `/2_Scripts/`
+  - Folder containing `R` scripts to replicate results and figures
+- `/3_Data/`
+  - Folder containing `R` with saved data during analysis
+- `/4_Figures`
+  -  (Dummy) Folder containing figures
+
+**Correspondence:** [Maximilian H.K. Hesselbarth](mailto:mhk.hesselbarth@gmail.com)

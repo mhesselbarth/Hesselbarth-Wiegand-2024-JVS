@@ -2,6 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-*.pdf
 *.rds
 _rslurm*/
+4_Figures/

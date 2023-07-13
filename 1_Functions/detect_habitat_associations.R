@@ -10,7 +10,7 @@
 detect_habitat_associations <- function(input, species_type){
   
   # get class id of associated habitat
-  habitat <- stringr::str_extract(string = species_type, pattern = "(\\d)+") %>% 
+  habitat <- stringr::str_extract(string = species_type, pattern = "(\\d)+") |> 
     as.numeric()
   
   # determine if positive or negative association

@@ -2,7 +2,7 @@
 ##    Author: Maximilian H.K. Hesselbarth        ##
 ##    Department of Ecosystem Modelling          ##
 ##    University of Goettingen                   ##
-##    mhk.hesselbarth@gmail.com   ##
+##    mhk.hesselbarth@gmail.com                  ##
 ##    www.github.com/mhesselbarth                ##
 ###################################################
 
@@ -11,10 +11,13 @@
 # Packages
 library(cowplot)
 library(maptools)
+library(MetBrewer)
 library(NLMR)
+library(raster)
 library(rslurm)
 library(shar)
 library(sf)
+library(spatstat.explore)
 library(spatstat.geom)
 library(spatstat.random)
 library(suppoRt)
@@ -27,7 +30,7 @@ library(tidyverse)
 rscript_path <- "/opt/sw/rev/21.12/haswell/gcc-9.3.0/r-4.1.1-kwp4zk/rlib/R/bin/Rscript"
 
 # number of columns and rows for neutral landscape
-number_coloumns <- 50 
+number_cols <- 50 
 
 number_rows <- 50
 
@@ -35,22 +38,22 @@ number_rows <- 50
 resolution <- 20
 
 # fragmentation levels
-fract_dim <- c(0.5, 1.0, 1.5)
+fract_dim <- c(0.5, 1.65)
 
 # approximate number of points for each species
 number_points <- 100
 
 # number of randomized habitat maps / point patterns
-n_random <- c(19, 39, 199)
+n_random <- c(39, 199)
 
 # number of habitats
-n <- 5 # c(3, 5, 10)
+n <- 5
 
 # association strength sequence
-association_strength <- seq(from = 0.05, to = 1, by = 0.15)
+association_strength <- seq(from = 0.1, to = 1, by = 0.1)
 
 # number of simulation runs
-iterations <- 25
+iterations <- 50
 
 # number of iterations pattern reconstruction
 max_runs <- 10000
@@ -62,7 +65,7 @@ comp_fast <- 0
 no_change <- 5000
 
 # ggplot settings
-dpi <- 900
+dpi <- 300
 
 height <- 297
 

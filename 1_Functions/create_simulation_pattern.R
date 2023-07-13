@@ -22,9 +22,9 @@ create_simulation_pattern <- function(raster, number_points = 100, association_s
   owin_overall <- spatstat.geom::owin(xrange = c(extent_raster[1], extent_raster[2]), 
                                       yrange = c(extent_raster[3], extent_raster[4]))
   
-  habitats_poly <- terra::as.polygons(raster, trunc = TRUE, dissolve = TRUE, values = TRUE) %>% 
-    sf::st_as_sf() %>%
-    dplyr::group_by(layer) %>% 
+  habitats_poly <- terra::as.polygons(raster, trunc = TRUE, dissolve = TRUE, values = TRUE) |> 
+    sf::st_as_sf() |>
+    dplyr::group_by(layer) |> 
     dplyr::summarise()
   
   # Species 1: Positive associations (Poisson)

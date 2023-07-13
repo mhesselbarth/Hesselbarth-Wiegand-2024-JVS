@@ -22,7 +22,7 @@ create_simulation_species <- function(habitats_poly, habitat, owin_overall,
   
   scale <- mean(diff(owin_overall$yrange), diff(owin_overall$xrange)) / 25
   
-  owin_pattern <- sf::as_Spatial(habitats_poly[habitats_poly$layer == habitat, ]) %>% 
+  owin_pattern <- sf::as_Spatial(habitats_poly[habitats_poly$layer == habitat, ]) |> 
     maptools::as.owin.SpatialPolygons()
   
   p_retain <- 1 - association_strength

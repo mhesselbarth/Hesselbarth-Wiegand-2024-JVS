@@ -1,12 +1,9 @@
 ##-----------------------------------------------##
 ##    Author: Maximilian H.K. Hesselbarth        ##
-##    Department of Ecosystem Modelling          ##
-##    University of Goettingen                   ##
+##                                               ##
 ##    mhk.hesselbarth@gmail.com                  ##
 ##    www.github.com/mhesselbarth                ##
 ##-----------------------------------------------##
-
-# Purpose of script: Create input data for simulation study
 
 source("1_Functions/setup.R")
 

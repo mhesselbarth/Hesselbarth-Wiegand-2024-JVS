@@ -1,7 +1,6 @@
 ##-----------------------------------------------##
 ##    Author: Maximilian H.K. Hesselbarth        ##
-##    Department of Ecosystem Modelling          ##
-##    University of Goettingen                   ##
+##                                               ##
 ##    mhk.hesselbarth@gmail.com                  ##
 ##    www.github.com/mhesselbarth                ##
 ##-----------------------------------------------##

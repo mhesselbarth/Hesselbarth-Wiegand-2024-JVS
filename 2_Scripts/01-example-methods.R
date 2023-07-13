@@ -1,7 +1,6 @@
 ##-----------------------------------------------##
 ##    Author: Maximilian H.K. Hesselbarth        ##
-##    Department of Ecosystem Modelling          ##
-##    University of Goettingen                   ##
+##                                               ##
 ##    mhk.hesselbarth@gmail.com                  ##
 ##    www.github.com/mhesselbarth                ##
 ##-----------------------------------------------##
@@ -13,7 +12,7 @@ source("1_Functions/create_simulation_species.R")
 
 #### Create example data ####
 
-# b = gamma; c = torus; d = walk; e = reconstruction
+# b = gamma; c = reconstruction; d = torus; e = random walk
 
 # create landscape
 simulation_landscape <- NLMR::nlm_fbm(ncol = number_cols, nrow = number_rows, 

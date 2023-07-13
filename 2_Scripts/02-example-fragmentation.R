@@ -1,7 +1,6 @@
 ##-----------------------------------------------##
 ##    Author: Maximilian H.K. Hesselbarth        ##
-##    Department of Ecosystem Modelling          ##
-##    University of Goettingen                   ##
+##                                               ##
 ##    mhk.hesselbarth@gmail.com                  ##
 ##    www.github.com/mhesselbarth                ##
 ##-----------------------------------------------##
@@ -10,6 +9,7 @@ source("1_Functions/setup.R")
 
 #### Create example data ####
 
+# create two landscape with fragmentation parameter and convert to data frame
 landscape_df <- purrr::map_dfr(fract_dim, function(i) {
   
   NLMR::nlm_fbm(ncol = number_cols, nrow = number_rows, resolution = resolution, fract_dim = i, 

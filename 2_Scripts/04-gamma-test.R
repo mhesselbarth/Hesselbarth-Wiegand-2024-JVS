@@ -12,20 +12,23 @@ source("1_Functions/setup.R")
 
 source("1_Functions/detect_habitat_associations.R")
 
-df_experiment <-  readRDS("3_Data/df_experiment.rds")
-
-simulation_habitat_list <- readRDS("3_Data/simulation_habitat_list.rds")
-
-simulation_pattern_list <- readRDS("3_Data/simulation_pattern_list.rds")
+simulation_experiment_list <- readRDS("3_Data/simulation_experiment_list.rds")
 
 #### Define HPC function ####
 
-foo_hpc <- function(fract_dim, association_strength, n_random, row_counter) {
+foo_hpc <- function(input) {
   
   # get simulation data
-  simulation_habitat <- terra::rast(simulation_habitat_list[[row_counter]])
+  simulation_habitat <- terra::rast(input$habitat)
   
-  simulation_pattern <- simulation_pattern_list[[row_counter]]
+  simulation_pattern <- input$pattern
+  
+  # get simulation parameters
+  fract_dim <- input$parameter["fract_dim"]
+  
+  n_random <- input$parameter["n_random"]
+  
+  association_strength <- input$parameter["association_strength"]
   
   # name of species include type of association
   names_species <- as.character(unique(simulation_pattern$marks$species))
@@ -102,24 +105,23 @@ foo_hpc <- function(fract_dim, association_strength, n_random, row_counter) {
   
   # combine results of current association strength to one data frame
   dplyr::bind_rows("1" = detection_species_1, "2" = detection_species_2, 
-                   "3" = detection_species_3, "4" = detection_species_4, .id = "species") %>% 
-    dplyr::mutate(association_strength = association_strength, fract_dim = fract_dim,
-                  n_random = n_random, row_counter =  row_counter, .before = correct)
+                   "3" = detection_species_3, "4" = detection_species_4, .id = "species") |>  
+    dplyr::mutate(fract_dim = fract_dim, n_random = n_random, association_strength = association_strength, 
+                  .before = species)
   
 }
 
 #### Submit HPC ####
 
-globals <- c("simulation_habitat_list", "simulation_pattern_list", # sim data
-             "detect_habitat_associations") # helper functions
+globals <- c("detect_habitat_associations") # helper functions
 
-sbatch_gamma <- rslurm::slurm_apply(f = foo_hpc, params = df_experiment, 
-                                    global_objects = globals, jobname = "gamma_test",
-                                    nodes = nrow(df_experiment), cpus_per_node = 1, 
-                                    slurm_options = list("partition" = "medium",
-                                                         "time" = "06:00:00"),
-                                    pkgs = c("dplyr", "shar", "spatstat.geom", "stringr", "terra"),
-                                    rscript_path = rscript_path, submit = FALSE)
+sbatch_gamma <- rslurm::slurm_map(x = simulation_experiment_list, f = foo_hpc,
+                                  global_objects = globals, jobname = "gamma_test",
+                                  nodes = length(simulation_experiment_list), cpus_per_node = 1, 
+                                  slurm_options = list("partition" = "medium",
+                                                       "time" = "06:00:00"),
+                                  pkgs = c("dplyr", "shar", "spatstat.geom", "stringr", "terra"),
+                                  rscript_path = rscript_path, submit = FALSE)
 
 #### Collect results #### 
 

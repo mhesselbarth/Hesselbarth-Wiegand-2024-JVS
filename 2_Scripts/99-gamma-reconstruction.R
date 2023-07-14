@@ -37,7 +37,7 @@ example_species <- spatstat.geom::subset.ppp(simulation_pattern, species_code ==
 
 # fit clustered pattern to data
 gamma_test <- shar::fit_point_process(spatstat.geom::unmark(example_species), 
-                                      n_random = 39, process = "cluster")
+                                      n_random = 199, process = "cluster")
 
 pattern_recon <- shar::reconstruct_pattern(spatstat.geom::unmark(example_species), 
                                                     method = "cluster", n_random = 199, annealing = 0.0,
@@ -97,4 +97,4 @@ gg_comparison <- ggplot(data = result_combn) +
 
 suppoRt::save_ggplot(plot = gg_comparison, path = "4_Figures/", filename = "Fig-A1.png",
                      dpi = dpi, width = width, height = height * 1/3, units = units, 
-                     overwrite = TRUE)
+                     overwrite = FALSE)

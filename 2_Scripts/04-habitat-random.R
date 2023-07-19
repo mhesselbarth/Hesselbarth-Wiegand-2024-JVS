@@ -39,7 +39,7 @@ foo_hpc <- function(input) {
   # species 1
   
   associations_species_1 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 1) |> 
-    shar::results_habitat_association(pattern = ., raster = random_habitats, verbose = TRUE)
+    shar::results_habitat_association(pattern = _, raster = random_habitats, verbose = TRUE)
   
   # count correct/false detections of species-habitat associations
   detection_species_1 <- detect_habitat_associations(input = associations_species_1, 
@@ -48,7 +48,7 @@ foo_hpc <- function(input) {
   # species 2
   
   associations_species_2 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 2) |> 
-    shar::results_habitat_association(pattern = ., raster = random_habitats, verbose = TRUE)
+    shar::results_habitat_association(pattern = _, raster = random_habitats, verbose = TRUE)
   
   # count correct/false detections of species-habitat associations
   detection_species_2 <- detect_habitat_associations(input = associations_species_2, 
@@ -57,7 +57,7 @@ foo_hpc <- function(input) {
   # species 3
   
   associations_species_3 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 3) |> 
-    shar::results_habitat_association(pattern = ., raster = random_habitats, verbose = TRUE)
+    shar::results_habitat_association(pattern = _, raster = random_habitats, verbose = TRUE)
   
   # count correct/false detections of species-habitat associations
   detection_species_3 <- detect_habitat_associations(input = associations_species_3,
@@ -66,7 +66,7 @@ foo_hpc <- function(input) {
   # species 4
   
   associations_species_4 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 4) |> 
-    shar::results_habitat_association(pattern = ., raster = random_habitats, verbose = TRUE)
+    shar::results_habitat_association(pattern = _, raster = random_habitats, verbose = TRUE)
   
   # count correct/false detections of species-habitat associations
   detection_species_4 <- detect_habitat_associations(input = associations_species_4, 

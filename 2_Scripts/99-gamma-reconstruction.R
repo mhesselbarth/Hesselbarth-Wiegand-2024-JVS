@@ -40,8 +40,9 @@ gamma_test <- shar::fit_point_process(spatstat.geom::unmark(example_species),
                                       n_random = 199, process = "cluster")
 
 pattern_recon <- shar::reconstruct_pattern(spatstat.geom::unmark(example_species), 
-                                                    method = "cluster", n_random = 199, annealing = 0.0,
-                                                    max_runs = 25000)
+                                           n_random = 199, max_runs = max_runs,
+                                           method = "cluster", comp_fast = comp_fast, 
+                                           no_change = no_change)
 
 #### Save results ####
 

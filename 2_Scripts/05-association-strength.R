@@ -36,6 +36,13 @@ summarized_df <- dplyr::group_by(combined_df, method, species, fract_dim,
                 n_random = factor(n_random, levels = c(39, 199), 
                                   labels = c("n random: 39", "n random: 199")))
 
+dplyr::group_by(summarized_df, fract_dim) |> 
+  dplyr::summarise(correct_mn = mean(correct_mn), false_mn = mean(false_mn))
+
+dplyr::group_by(summarized_df, n_random) |> 
+  dplyr::summarise(correct_mn = mean(correct_mn), false_mn = mean(false_mn))
+
+
 #### Setup plot globals ####
 
 color_scale <- c("gamma" = "#df4e25", "torus" = "#007aa1",
@@ -85,10 +92,12 @@ ggplot_correct_total <- cowplot::plot_grid(plotlist = ggplot_correct_list,
                                            labels = c("a)", "b)", "c)", "d)"),
                                            label_fontface = "plain")
 
-ggplot_correct_total <- cowplot::ggdraw(ggplot_correct_total, xlim = c(-0.015, 1.0), ylim = c(-0.015, 1.0)) + 
+ggplot_correct_total <- cowplot::ggdraw(ggplot_correct_total, xlim = c(-0.05, 1.05), ylim = c(-0.05, 1.05)) + 
   cowplot::draw_label("Habitat association strength", x = 0.5, y = 0, vjust = -0.5, angle = 0, size = size_base) + 
-  cowplot::draw_label("Correct association detected [%]", x = 0.0, y = 0.5, vjust = 0.0, 
-                      angle = 90, size = size_base)
+  cowplot::draw_label("CSR", x = 0.25, y = 1, size = size_base) + cowplot::draw_label("Clustered", x = 0.75, y = 1, size = size_base) + 
+  cowplot::draw_label("Correct association detected [%]", x = -0.025, y = 0.5, angle = 90, size = size_base) +
+  cowplot::draw_label("Positive assoc.", x = 0.0, y = 0.75, angle = 90, size = size_base) + 
+  cowplot::draw_label("Negative assoc.", x = 0.0, y = 0.25, angle = 90, size = size_base)
 
 ggplot_correct_total <- cowplot::plot_grid(ggplot_correct_total, cowplot::get_legend(ggplot_dummy),
                                            nrow = 2, ncol = 1, rel_heights = c(0.95, 0.05))
@@ -117,10 +126,12 @@ ggplot_false_list <- purrr::map(levels(summarized_df$species), function(i) {
 ggplot_false_total <- cowplot::plot_grid(plotlist = ggplot_false_list, labels = c("a)", "b)", "c)", "d)"),
                                          label_fontface = "plain")
 
-ggplot_false_total <- cowplot::ggdraw(ggplot_false_total, xlim = c(-0.015, 1.0), ylim = c(-0.015, 1.0)) + 
+ggplot_false_total <- cowplot::ggdraw(ggplot_false_total, xlim = c(-0.05, 1.05), ylim = c(-0.05, 1.05)) + 
   cowplot::draw_label("Habitat association strength", x = 0.5, y = 0, vjust = -0.5, angle = 0, size = size_base) + 
-  cowplot::draw_label("False association detected [%]", x = 0.0, y = 0.5, vjust = 0.0, 
-                      angle = 90, size = size_base)
+  cowplot::draw_label("CSR", x = 0.25, y = 1, size = size_base) + cowplot::draw_label("Clustered", x = 0.75, y = 1, size = size_base) + 
+  cowplot::draw_label("Correct association detected [%]", x = -0.025, y = 0.5, angle = 90, size = size_base) +
+  cowplot::draw_label("Positive assoc.", x = 0.0, y = 0.75, angle = 90, size = size_base) + 
+  cowplot::draw_label("Negative assoc.", x = 0.0, y = 0.25, angle = 90, size = size_base)
 
 ggplot_false_total <- cowplot::plot_grid(ggplot_false_total, cowplot::get_legend(ggplot_dummy),
                                          nrow = 2, ncol = 1, rel_heights = c(0.95, 0.05))

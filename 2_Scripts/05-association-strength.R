@@ -34,7 +34,7 @@ summarized_df <- dplyr::group_by(combined_df, method, species, fract_dim,
                 fract_dim = factor(fract_dim, levels = c(0.5, 1.65), 
                                    labels = c("Low fragmentation", "High fragmentation")), 
                 n_random = factor(n_random, levels = c(39, 199), 
-                                  labels = c("n random: 39", "n random: 199")))
+                                  labels = c("n rand.: 39", "n rand.: 199")))
 
 dplyr::group_by(summarized_df, fract_dim) |> 
   dplyr::summarise(correct_mn = mean(correct_mn), false_mn = mean(false_mn))
@@ -48,9 +48,10 @@ dplyr::group_by(summarized_df, n_random) |>
 color_scale <- c("gamma" = "#df4e25", "torus" = "#007aa1",
                  "walk" = "#41b282", "reconstruction" = "#fcb252")
 
-color_alpha <- 0.25
+color_alpha <- 0.5
 
-size_base <- 10
+size_base <- 12
+size_point <- 1.75
 
 #### Create dummy plot for legeend ####
 
@@ -58,9 +59,9 @@ ggplot_dummy <- data.frame(method = levels(summarized_df$method),
                            association_strength = c(0, 0, 0, 0), correct_mn = c(1, 1, 1, 1)) |> 
   ggplot(aes(x = association_strength,  y = correct_mn, color = method)) + 
   geom_line(alpha = color_alpha) + 
-  geom_point(size = 2.5) + 
+  geom_point(size = size_point) + 
   scale_color_manual(name = "", values = color_scale, 
-                     labels = c("gamma" = "Gamma-test", "torus" = "Torus-translation test", 
+                     labels = c("gamma" = "gamma-test", "torus" = "Torus-translation test", 
                                 "walk" = "Randomised-habitats procedure", "reconstruction" = "Pattern reconstruction")) +
   guides(color = guide_legend(nrow = 1, byrow = FALSE)) + 
   theme_classic(base_size = size_base) + 
@@ -71,12 +72,12 @@ ggplot_dummy <- data.frame(method = levels(summarized_df$method),
 ggplot_correct_list <- purrr::map(levels(summarized_df$species), function(i) {
   
   dplyr::filter(summarized_df, species == i) |> 
-    ggplot(aes(x = association_strength, y = correct_mn, color = method, group = method)) + 
-    geom_hline(yintercept = 0.0, color = "grey", linetype = 2) +  
+    ggplot(aes(x = association_strength, y = correct_mn, color = method)) + 
+    geom_hline(yintercept = 0.0, color = "grey", linetype = 2) +
     geom_line(alpha = color_alpha) +
-    geom_point(aes(shape = fract_dim)) + 
+    geom_point(size = size_point) +
     scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
-    scale_y_continuous(limits = c(0, 100), breaks = c(0, 50, 100)) +
+    scale_y_continuous(limits = c(0, 150), breaks = c(0, 50, 150)) +
     scale_color_manual(values = color_scale) +
     facet_grid(rows = dplyr::vars(n_random), cols  = dplyr::vars(fract_dim)) +
     labs(x = "", y = "") +
@@ -110,7 +111,7 @@ ggplot_false_list <- purrr::map(levels(summarized_df$species), function(i) {
     ggplot(aes(x = association_strength, y = false_mn, color = method, group = method)) + 
     geom_hline(yintercept = 0.0, color = "grey", linetype = 2) +  
     geom_line(alpha = color_alpha) + 
-    geom_point() + 
+    geom_point(size = size_point) +
     scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
     scale_y_continuous(limits = c(0, 100), breaks = c(0, 50, 100)) +
     scale_color_manual(values = color_scale) +
@@ -129,7 +130,7 @@ ggplot_false_total <- cowplot::plot_grid(plotlist = ggplot_false_list, labels = 
 ggplot_false_total <- cowplot::ggdraw(ggplot_false_total, xlim = c(-0.05, 1.05), ylim = c(-0.05, 1.05)) + 
   cowplot::draw_label("Habitat association strength", x = 0.5, y = 0, vjust = -0.5, angle = 0, size = size_base) + 
   cowplot::draw_label("CSR", x = 0.25, y = 1, size = size_base) + cowplot::draw_label("Clustered", x = 0.75, y = 1, size = size_base) + 
-  cowplot::draw_label("Correct association detected [%]", x = -0.025, y = 0.5, angle = 90, size = size_base) +
+  cowplot::draw_label("False association detected [%]", x = -0.025, y = 0.5, angle = 90, size = size_base) +
   cowplot::draw_label("Positive assoc.", x = 0.0, y = 0.75, angle = 90, size = size_base) + 
   cowplot::draw_label("Negative assoc.", x = 0.0, y = 0.25, angle = 90, size = size_base)
 
@@ -143,3 +144,4 @@ suppoRt::save_ggplot(plot = ggplot_correct_total, filename = "4_Figures/Fig-3.pn
 
 suppoRt::save_ggplot(plot = ggplot_false_total, filename = "4_Figures/Fig-A2.png", overwrite = FALSE, 
                      dpi = dpi, height = width * 0.75, width = height, units = units)
+

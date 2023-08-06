@@ -86,7 +86,7 @@ gg_plot_null <- ggplot(data = pcf_rand_df) +
   geom_ribbon(aes(x = r, ymin = lo, ymax = hi, fill = n_null), alpha = 0.5) + 
   geom_line(data = pcf_obs_df, aes(x = r, y = theo), col = "grey", linetype = 2, linewidth = 0.5) +
   geom_line(data = pcf_obs_df, aes(x = r, y = iso)) +
-  facet_wrap(. ~ method) + 
+  facet_wrap(. ~ method, nrow = 2) + 
   scale_fill_manual(name = "", values = c("n random: 39" = "#AE0400", "n random: 199" = "#0085A9")) +
   labs(x = expression(paste("Distance ", italic("r"), " in meters [m]")), 
        y = expression(paste("Pair-correlation function ", italic("g(r)")))) +
@@ -96,4 +96,4 @@ gg_plot_null <- ggplot(data = pcf_rand_df) +
 
 suppoRt::save_ggplot(plot = gg_plot_null, path = "4_Figures/", filename = "Fig-A3.png",
                      dpi = dpi, width = width, height = height * 1/2, units = units, 
-                     overwrite = T)
+                     overwrite = FALSE)

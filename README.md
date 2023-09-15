@@ -2,10 +2,10 @@
 
 <!-- badges: end -->
 
-## A simulation study comparing common methods to analyses species-habitat associations of plants
-### Hesselbarth & Wiegand (under review)
+## A simulation study comparing common methods for analyzing species-habitat associations of plants
+### Hesselbarth & Wiegand
 
-Code repository for all `R` scripts used in **Hesselbarth, M.H.K., Wiegand, K., (under review). A simulation study comparing common methods to analyses species-habitat associations of plants. JOURNAL NAME**
+Code repository for all `R` scripts used in **Hesselbarth, M.H.K., Wiegand, K. A simulation study comparing common methods for analyzing species-habitat associations of plants.** submitted to *Journal of Vegetation Science*
 
 The repository contains the following folders (see README.txt in each folder for sub-directories):
 - `/1_Functions/`

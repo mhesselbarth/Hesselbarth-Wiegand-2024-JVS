@@ -6,6 +6,7 @@
 ##-----------------------------------------------##
 
 source("1_Functions/setup.R")
+library(landscapemetrics)
 
 #### Create example data ####
 
@@ -33,9 +34,17 @@ ggplot_landscape <- ggplot(data = landscape_df, aes(x = x, y = y, fill = layer))
         strip.text = element_text(hjust = 0, size = 10), strip.background = element_blank(),
         axis.title = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), axis.line = element_blank(), 
-        panel.border = element_rect(colour = "black", fill = NA, size = 1.0))
+        panel.border = element_rect(colour = "black", fill = NA, linewidth = 1.0))
+
+#### Calculate lsm patch area ####
+
+patch_area_df <- dplyr::group_by(landscape_df, fract_dim) |> 
+  dplyr::group_split() |> 
+  purrr::map(function(i) terra::rast(i[ ,-4], type = "xyz")) |> 
+  terra::rast() |> 
+  landscapemetrics::calculate_lsm(what = "lsm_l_area_mn")
 
 #### Save ggplot ####
 
-suppoRt::save_ggplot(plot = ggplot_landscape, filename = "4_Figures/Fig-2.png", overwrite = T, 
+suppoRt::save_ggplot(plot = ggplot_landscape, filename = "4_Figures/Fig-2.png", overwrite = FALSE, 
                      dpi = dpi, height = height * 0.35, width = width, units = units)

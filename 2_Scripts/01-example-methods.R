@@ -79,7 +79,7 @@ ggplot_observed <- ggplot() +
   theme(aspect.ratio = 1, legend.position = "none",
         axis.title = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), axis.line = element_blank(), 
-        panel.border = element_rect(colour = "black", fill = NA, size = 1.0))
+        panel.border = element_rect(colour = "black", fill = NA, linewidth = 1.0))
 
 ggplot_gamma <- ggplot() +
   geom_raster(data = simulation_landscape_df, aes(x = x, y = y, fill = factor(layer))) +
@@ -89,7 +89,7 @@ ggplot_gamma <- ggplot() +
   theme(aspect.ratio = 1, legend.position = "none",
         axis.title = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), axis.line = element_blank(), 
-        panel.border = element_rect(colour = "black", fill = NA, size = 1.0))
+        panel.border = element_rect(colour = "black", fill = NA, linewidth = 1.0))
 
 ggplot_recon <- ggplot() +
   geom_raster(data = simulation_landscape_df, aes(x = x, y = y, fill = factor(layer))) +
@@ -99,7 +99,7 @@ ggplot_recon <- ggplot() +
   theme(aspect.ratio = 1, legend.position = "none",
         axis.title = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), axis.line = element_blank(), 
-        panel.border = element_rect(colour = "black", fill = NA, size = 1.0))
+        panel.border = element_rect(colour = "black", fill = NA, linewidth = 1.0))
 
 ggplot_torus <- ggplot() +
   geom_raster(data = torus_trans_df, aes(x = x, y = y, fill = factor(layer))) +
@@ -109,7 +109,7 @@ ggplot_torus <- ggplot() +
   theme(aspect.ratio = 1, legend.position = "none",
         axis.title = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), axis.line = element_blank(), 
-        panel.border = element_rect(colour = "black", fill = NA, size = 1.0))
+        panel.border = element_rect(colour = "black", fill = NA, linewidth = 1.0))
 
 ggplot_walk <- ggplot() +
   geom_raster(data = random_walk_df, aes(x = x, y = y, fill = factor(layer))) +
@@ -119,21 +119,24 @@ ggplot_walk <- ggplot() +
   theme(aspect.ratio = 1, legend.position = "none",
         axis.title = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), axis.line = element_blank(), 
-        panel.border = element_rect(colour = "black", fill = NA, size = 1.0))
+        panel.border = element_rect(colour = "black", fill = NA, linewidth = 1.0))
 
 
 #### Create total plot ####
 
 ggplot_random <- cowplot::plot_grid(ggplot_gamma, ggplot_recon, ggplot_torus, ggplot_walk,
-                                    nrow = 2, ncol = 2, labels = c("b)", "c)", "d)", "e)"), 
+                                    nrow = 2, ncol = 2, labels = c("b) gamma-test            ", 
+                                                                   "c) pattern reconstruction",
+                                                                   "d) torus-translation     ", 
+                                                                   "e) randomized-habitats   "), 
                                     label_fontface = "plain", label_size = size_base, 
-                                    label_y = 0.9, label_x = 0.05)
+                                    label_x = 0, label_y = 0.9, hjust = -0.15)
 
 ggplot_total <- cowplot::plot_grid(ggplot_observed, ggplot_random, ncol = 2,
-                                   labels = c("a)", ""), label_fontface = "plain", label_size = size_base,
-                                   label_y = 0.9)
+                                   labels = c("a) Observed", ""), label_fontface = "plain", label_size = size_base,
+                                   label_x = 0, label_y = 0.9)
 
 ### Save ggplot ####
 
-suppoRt::save_ggplot(plot = ggplot_total, filename = "4_Figures/Fig-1.png", overwrite = TRUE, 
+suppoRt::save_ggplot(plot = ggplot_total, filename = "4_Figures/Fig-1.png", overwrite = FALSE, 
                      dpi = dpi, height = height * 0.5, width = width, units = units)

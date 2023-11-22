@@ -29,12 +29,6 @@ create_simulation_species <- function(habitats_poly, habitat, owin_overall,
   
   if (process == "Poisson") {
     
-    # pattern_a <- mobsim::sim_poisson_community(s_pool = 1, n_sim = number_points, 
-    #                                            xrange = owin_overall$xrange, yrange = owin_overall$yrange)
-    
-    # pattern_a <- spatstat.geom::ppp(x = pattern_a$census$x, y = pattern_a$census$y, 
-    #                                 window = owin_overall)
-    
     pattern_a <- spatstat.random::runifpoint(n = number_points, win = owin_overall)
     
     if (type == "positive") {
@@ -65,20 +59,16 @@ create_simulation_species <- function(habitats_poly, habitat, owin_overall,
     
   } else if (process == "Thomas") {
     
-    # pattern_a <- mobsim::sim_thomas_community(s_pool = 1, n_sim = number_points,
-    #                                           sigma = scale, cluster_points = 5,
-    #                                           xrange = owin_overall$xrange, yrange = owin_overall$yrange)
-    # 
-    # pattern_a <- spatstat.geom::ppp(x = pattern_a$census$x, y = pattern_a$census$y,
-    #                                 window = owin_overall)
-    
     pattern_a <- spatstat.random::rThomas(kappa = (number_points / spatstat.geom::area.owin(owin_overall)) / 5, 
                                           scale = scale, mu = 5, win = owin_overall)
     
+    lambda <- density(pattern_a)
+    
     if (type == "positive") {
       
-      pattern_b <- spatstat.random::runifpoint(n = floor(pattern_a$n * association_strength), 
-                                               win = owin_pattern)
+      # Add points with higher probability in clusters
+      pattern_b <- spatstat.random::rpoint(n = floor(pattern_a$n * association_strength), 
+                                           f = lambda, win = owin_pattern)
       
       pattern <- spatstat.geom::superimpose.ppp(pattern_a, pattern_b, W = owin_overall)
       

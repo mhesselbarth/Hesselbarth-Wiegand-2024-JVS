@@ -26,7 +26,7 @@ library(tidyverse)
 #### Init simulation environment ####
 
 # run `file.path(R.home("bin"), "Rscript")`
-rscript_path <- "/opt/sw/rev/21.12/haswell/gcc-9.3.0/r-4.1.1-kwp4zk/rlib/R/bin/Rscript"
+rscript_path <- "/opt/sw/rev/21.12/haswell/gcc-9.3.0/r-4.2.2-2nuddo/rlib/R/bin/Rscript"
 
 # number of columns and rows for neutral landscape
 number_cols <- 50 
@@ -43,7 +43,7 @@ fract_dim <- c(0.5, 1.65)
 number_points <- 100
 
 # number of randomized habitat maps / point patterns
-n_random <- c(39, 199)
+n_random <- c(99, 499)
 
 # number of habitats
 n <- 5

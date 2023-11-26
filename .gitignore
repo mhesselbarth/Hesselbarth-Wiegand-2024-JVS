@@ -5,3 +5,4 @@
 *.rds
 _rslurm*/
 4_Figures/
+.DS_Store

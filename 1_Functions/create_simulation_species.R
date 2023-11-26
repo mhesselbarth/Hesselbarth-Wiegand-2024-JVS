@@ -62,13 +62,21 @@ create_simulation_species <- function(habitats_poly, habitat, owin_overall,
     pattern_a <- spatstat.random::rThomas(kappa = (number_points / spatstat.geom::area.owin(owin_overall)) / 5, 
                                           scale = scale, mu = 5, win = owin_overall)
     
-    lambda <- density(pattern_a)
-    
+    # create lambda within habitat only
+    lambda <- density(pattern_a) |> 
+      terra::rast() |> 
+      terra::mask(mask = habitats_poly[habitats_poly$layer == habitat, ]) |> 
+      terra::as.data.frame(xy = TRUE) |> 
+      spatstat.geom::as.im()
+      
     if (type == "positive") {
       
-      # Add points with higher probability in clusters
-      pattern_b <- spatstat.random::rpoint(n = floor(pattern_a$n * association_strength), 
+      # add points with higher probability in clusters
+      pattern_b <- spatstat.random::rpoint(n = floor(pattern_a$n * association_strength),
                                            f = lambda, win = owin_pattern)
+
+      # pattern_b <- spatstat.random::runifpoint(n = floor(pattern_a$n * association_strength), 
+      #                                          win = owin_pattern)
       
       pattern <- spatstat.geom::superimpose.ppp(pattern_a, pattern_b, W = owin_overall)
       

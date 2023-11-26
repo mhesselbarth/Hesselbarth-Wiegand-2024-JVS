@@ -16,6 +16,8 @@ list.files(path = "1_Functions/", full.names = TRUE) |>
 # set seed
 set.seed(42, kind = "L'Ecuyer-CMRG")
 
+RandomFields::RFoptions(install = "no")
+
 #### Create example data ####
 # create landscape
 simulation_landscape <- NLMR::nlm_fbm(ncol = 50, nrow = 50, 
@@ -23,7 +25,7 @@ simulation_landscape <- NLMR::nlm_fbm(ncol = 50, nrow = 50,
                                       verbose = FALSE, 
                                       cPrintlevel = 0) |> 
   terra::rast() |> 
-  shar::classify_habitats(classes = 5)
+  shar::classify_habitats(classes = 5, style = "fisher")
 
 # create pattern with 4 species
 simulation_pattern <- create_simulation_pattern(raster = simulation_landscape, 
@@ -41,8 +43,7 @@ gamma_test <- shar::fit_point_process(spatstat.geom::unmark(example_species),
 
 pattern_recon <- shar::reconstruct_pattern(spatstat.geom::unmark(example_species), 
                                            n_random = 199, max_runs = max_runs,
-                                           method = "cluster", comp_fast = comp_fast, 
-                                           no_change = no_change)
+                                           method = "cluster", no_change = no_change)
 
 #### Save results ####
 
@@ -96,6 +97,6 @@ gg_comparison <- ggplot(data = result_combn) +
   theme_classic(base_size = 12) +  
   theme(legend.position = c(0.9, 0.9))
 
-suppoRt::save_ggplot(plot = gg_comparison, path = "4_Figures/", filename = "Fig-A1.png",
+suppoRt::save_ggplot(plot = gg_comparison, path = "4_Figures/", filename = "Fig-S1.png",
                      dpi = dpi, width = width, height = height * 1/2, units = units, 
                      overwrite = FALSE)

@@ -8,6 +8,8 @@
 source("1_Functions/setup.R")
 library(landscapemetrics)
 
+RandomFields::RFoptions(install = "no")
+
 #### Create example data ####
 
 # create two landscape with fragmentation parameter and convert to data frame
@@ -46,5 +48,5 @@ patch_area_df <- dplyr::group_by(landscape_df, fract_dim) |>
 
 #### Save ggplot ####
 
-suppoRt::save_ggplot(plot = ggplot_landscape, filename = "4_Figures/Fig-2.png", overwrite = FALSE, 
+suppoRt::save_ggplot(plot = ggplot_landscape, filename = "4_Figures/Fig-3.png", overwrite = FALSE, 
                      dpi = dpi, height = height * 0.35, width = width, units = units)

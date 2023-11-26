@@ -52,13 +52,10 @@ n <- 5
 association_strength <- seq(from = 0.1, to = 1, by = 0.1)
 
 # number of simulation runs
-iterations <- 50
+iterations <- 25
 
 # number of iterations pattern reconstruction
 max_runs <- 10000
-
-# threshold for fast computation of summary functions
-comp_fast <- 0
 
 # threshold to stop reconstruction if no change occurred
 no_change <- 5000

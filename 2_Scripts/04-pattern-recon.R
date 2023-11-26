@@ -40,12 +40,11 @@ foo_hpc <- function(input) {
   # randomize pattern using pattern reconstruction
   random_species_1 <- shar::reconstruct_pattern(pattern = species_1, n_random = n_random,
                                                 max_runs = max_runs, method = "homo", 
-                                                comp_fast = comp_fast, no_change = no_change,
-                                                verbose = FALSE)
+                                                no_change = no_change, verbose = FALSE)
   
   # get habitat associations
   associations_species_1 <- shar::results_habitat_association(pattern = random_species_1, raster = simulation_habitat,
-                                                              verbose = TRUE)
+                                                              verbose = FALSE)
   
   # count correct/false detections of species-habitat associations
   detection_species_1 <- detect_habitat_associations(input = associations_species_1, 
@@ -59,12 +58,11 @@ foo_hpc <- function(input) {
   # randomize pattern using pattern reconstruction
   random_species_2 <- shar::reconstruct_pattern(pattern = species_2, n_random = n_random,
                                                 max_runs = max_runs, method = "cluster",
-                                                comp_fast = comp_fast, no_change = no_change,
-                                                verbose = FALSE)
+                                                no_change = no_change, verbose = FALSE)
   
   # get habitat associations
   associations_species_2 <- shar::results_habitat_association(pattern = random_species_2, raster = simulation_habitat,
-                                                              verbose = TRUE)
+                                                              verbose = FALSE)
   
   # count correct/false detections of species-habitat associations
   detection_species_2 <- detect_habitat_associations(input = associations_species_2, 
@@ -78,12 +76,11 @@ foo_hpc <- function(input) {
   # randomize pattern using pattern reconstruction
   random_species_3 <- shar::reconstruct_pattern(pattern = species_3, n_random = n_random,
                                                 max_runs = max_runs, method = "homo", 
-                                                comp_fast = comp_fast, no_change = no_change,
-                                                verbose = FALSE)
+                                                no_change = no_change, verbose = FALSE)
   
   # get habitat associations
   associations_species_3 <- shar::results_habitat_association(pattern = random_species_3, raster = simulation_habitat,
-                                                              verbose = TRUE)
+                                                              verbose = FALSE)
   
   # count correct/false detections of species-habitat associations
   detection_species_3 <- detect_habitat_associations(input = associations_species_3, 
@@ -97,12 +94,11 @@ foo_hpc <- function(input) {
   # randomize pattern using pattern reconstruction
   random_species_4 <- shar::reconstruct_pattern(pattern = species_4, n_random = n_random,
                                                 max_runs = max_runs, method = "cluster",
-                                                comp_fast = comp_fast, no_change = no_change,
-                                                verbose = FALSE)
+                                                no_change = no_change, verbose = FALSE)
   
   # get habitat associations
   associations_species_4 <- shar::results_habitat_association(pattern = random_species_4, raster = simulation_habitat,
-                                                              verbose = TRUE)
+                                                              verbose = FALSE)
   
   # count correct/false detections of species-habitat associations
   detection_species_4 <- detect_habitat_associations(input = associations_species_4, 
@@ -118,14 +114,15 @@ foo_hpc <- function(input) {
 
 #### Submit HPC ####
 
-globals <- c("max_runs", "comp_fast", "no_change", # reconstruct_pattern
+globals <- c("max_runs", "no_change", # reconstruct_pattern
              "detect_habitat_associations") # helper functions
 
 sbatch_recon <- rslurm::slurm_map(x = simulation_experiment_list, f = foo_hpc,
                                   global_objects = globals, jobname = "pattern_recon",
                                   nodes = length(simulation_experiment_list), cpus_per_node = 1, 
                                   slurm_options = list("partition" = "medium",
-                                                       "time" = "48:00:00"),
+                                                       "time" = "48:00:00", 
+                                                       "mem-per-cpu" = "1G"),
                                   pkgs = c("dplyr", "shar", "spatstat.geom", "stringr", "terra"),
                                   rscript_path = rscript_path, submit = FALSE)
 

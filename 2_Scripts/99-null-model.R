@@ -16,6 +16,8 @@ list.files(path = "1_Functions/", full.names = TRUE) |>
 # set seed
 set.seed(42, kind = "L'Ecuyer-CMRG")
 
+RandomFields::RFoptions(install = "no")
+
 #### Create example data ####
 # create landscape
 simulation_landscape <- NLMR::nlm_fbm(ncol = 50, nrow = 50, 
@@ -23,7 +25,7 @@ simulation_landscape <- NLMR::nlm_fbm(ncol = 50, nrow = 50,
                                       verbose = FALSE, 
                                       cPrintlevel = 0) |> 
   terra::rast() |> 
-  shar::classify_habitats(classes = 5)
+  shar::classify_habitats(classes = 5, style = "fisher")
 
 # create pattern with 4 species
 simulation_pattern <- create_simulation_pattern(raster = simulation_landscape, 
@@ -36,24 +38,24 @@ example_species <- spatstat.geom::subset.ppp(simulation_pattern, species_code ==
 #### Randomize data ####
 
 # fit clustered pattern to data
-gamma_test_39 <- shar::fit_point_process(spatstat.geom::unmark(example_species), 
-                                         n_random = 39, process = "cluster")
+gamma_test_99 <- shar::fit_point_process(spatstat.geom::unmark(example_species), 
+                                         n_random = 99, process = "cluster")
 
-gamma_test_199 <- shar::fit_point_process(spatstat.geom::unmark(example_species), 
-                                          n_random = 199, process = "cluster")
+gamma_test_499 <- shar::fit_point_process(spatstat.geom::unmark(example_species), 
+                                          n_random = 499, process = "cluster")
 
-pattern_recon_39 <- shar::reconstruct_pattern(spatstat.geom::unmark(example_species), 
-                                              n_random = 39, max_runs = max_runs, 
-                                              method = "cluster", comp_fast = comp_fast, 
-                                              no_change = no_change)
+# Pattern reconstruction
 
-pattern_recon_199 <- shar::reconstruct_pattern(spatstat.geom::unmark(example_species), 
-                                               n_random = 199, max_runs = max_runs, 
-                                               method = "cluster", comp_fast = comp_fast, 
-                                               no_change = no_change)
+pattern_recon_99 <- shar::reconstruct_pattern(spatstat.geom::unmark(example_species), 
+                                              n_random = 99, max_runs = max_runs, 
+                                              method = "cluster", no_change = no_change)
 
-random_list <- list(gamma_39 = gamma_test_39, gamma_199 = gamma_test_199, 
-                    recon_39 = pattern_recon_39, recon_199 = pattern_recon_199)
+pattern_recon_499 <- shar::reconstruct_pattern(spatstat.geom::unmark(example_species), 
+                                               n_random = 499, max_runs = max_runs, 
+                                               method = "cluster", no_change = no_change)
+
+random_list <- list(gamma_99 = gamma_test_99, gamma_499 = gamma_test_499, 
+                    recon_99 = pattern_recon_99, recon_499 = pattern_recon_499)
 
 suppoRt::save_rds(object = random_list, filename = "example_pattern_random.rds", 
                   path = "3_Data/", overwrite = FALSE)
@@ -94,6 +96,6 @@ gg_plot_null <- ggplot(data = pcf_rand_df) +
   theme(legend.position = c(0.9, 0.9), 
         strip.background = element_blank(), strip.text = element_text(hjust = 0))
 
-suppoRt::save_ggplot(plot = gg_plot_null, path = "4_Figures/", filename = "Fig-A3.png",
+suppoRt::save_ggplot(plot = gg_plot_null, path = "4_Figures/", filename = "Fig-S5.png",
                      dpi = dpi, width = width, height = height * 1/2, units = units, 
                      overwrite = FALSE)

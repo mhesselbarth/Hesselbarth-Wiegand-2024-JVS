@@ -10,6 +10,8 @@ source("1_Functions/setup.R")
 source("1_Functions/create_simulation_pattern.R")
 source("1_Functions/create_simulation_species.R")
 
+RandomFields::RFoptions(install = "no")
+
 #### Create example data ####
 
 # b = gamma; c = reconstruction; d = torus; e = random walk

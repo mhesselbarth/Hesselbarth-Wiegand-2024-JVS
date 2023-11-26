@@ -8,12 +8,13 @@
 source("1_Functions/setup.R")
 
 source("1_Functions/create_simulation_pattern.R")
-
 source("1_Functions/create_simulation_species.R")
+
+RandomFields::RFoptions(install = "no")
 
 #### Setup lists to store results ####
 
-# caluclate number of total jobs based on treatment levels
+# calculate number of total jobs based on treatment levels
 n_jobs <- length(association_strength) * length(fract_dim) * length(n_random) * iterations
 
 # create lists to store results
@@ -33,10 +34,10 @@ for (i in seq_along(association_strength)) {
       # create simulation landscape with n discrete classes
       simulation_habitat <- NLMR::nlm_fbm(ncol = number_cols, nrow = number_rows, resolution = resolution,
                                           fract_dim = fract_dim[[j]],
-                                          verbose = FALSE, cPrintlevel = 0) |> 
+                                          verbose = FALSE, cPrintlevel = 0) |>
         terra::rast() |>
-        shar::classify_habitats(n = n)
-      
+        shar::classify_habitats(n = n, style = "fisher")
+
       # create simulation pattern
       simulation_pattern <- create_simulation_pattern(raster = simulation_habitat,
                                                       number_points = number_points,
@@ -53,7 +54,7 @@ for (i in seq_along(association_strength)) {
                                               fract_dim = fract_dim[[j]],
                                               verbose = FALSE, cPrintlevel = 0) |> 
             terra::rast() |>
-            shar::classify_habitats(n = n)
+            shar::classify_habitats(n = n, style = "fisher")
           
           # create simulation pattern with 4 species  
           simulation_pattern <- create_simulation_pattern(raster = simulation_habitat,

@@ -64,7 +64,7 @@ suppoRt::save_rds(object = random_list, filename = "example_pattern_random.rds",
 
 random_list <- readRDS("3_Data/example_pattern_random.rds")
 
-pcf_obs_df <- spatstat.explore::pcf.ppp(random_list$gamma_39$observed, divisor = "d", correction = "Ripley", 
+pcf_obs_df <- spatstat.explore::pcf.ppp(random_list$gamma_99$observed, divisor = "d", correction = "Ripley", 
                                      r = seq(from = 0, to = 250, length.out = 515)) |> 
   tibble::as_tibble()
 
@@ -81,15 +81,18 @@ pcf_rand_df <- purrr::map_dfr(random_list, function(i) {
                    hi = quantile(iso, probs = 0.975), .groups = "drop") |> 
   dplyr::mutate(method = factor(method, levels = c("gamma", "recon"),
                                 labels = c("gamma" = "gamma-test", "recon" = "Pattern reconstruction")), 
-                n_null = factor(n_null, levels = c("39", "199"), 
-                                labels = c("39" = "n random: 39", "199" = "n random: 199")))
+                n_null = factor(n_null, levels = c("99", "499"), 
+                                labels = c("99" = "n random: 99", "499" = "n random: 499")))
 
 gg_plot_null <- ggplot(data = pcf_rand_df) + 
-  geom_ribbon(aes(x = r, ymin = lo, ymax = hi, fill = n_null), alpha = 0.5) + 
+  geom_ribbon(aes(x = r, ymin = lo, ymax = hi, fill = n_null), alpha = 0.25) +
+  geom_line(aes(x = r, y = lo, color = n_null), alpha = 0.5) + 
+  geom_line(aes(x = r, y = hi, color = n_null), alpha = 0.5) + 
   geom_line(data = pcf_obs_df, aes(x = r, y = theo), col = "grey", linetype = 2, linewidth = 0.5) +
   geom_line(data = pcf_obs_df, aes(x = r, y = iso)) +
   facet_wrap(. ~ method, nrow = 2) + 
-  scale_fill_manual(name = "", values = c("n random: 39" = "#AE0400", "n random: 199" = "#0085A9")) +
+  scale_color_manual(name = "", values = c("n random: 99" = "#AE0400", "n random: 499" = "#0085A9")) +
+  scale_fill_manual(name = "", values = c("n random: 99" = "#AE0400", "n random: 499" = "#0085A9")) +
   labs(x = expression(paste("Distance ", italic("r"), " in meters [m]")), 
        y = expression(paste("Pair-correlation function ", italic("g(r)")))) +
   theme_classic(base_size = 12) +

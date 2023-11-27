@@ -62,7 +62,8 @@ pcf_sum <- dplyr::bind_rows(species_1, species_3, species_2, species_4) |>
   dplyr::mutate(species = factor(species, levels = c("csr-pos", "clu-pos", "csr-neg", "clu-neg"), 
                                  labels = c("CSR (positive association)", "Cluster process (positive association)",
                                             "CSR (negative association)", "Cluster process (negative association)")),
-    assoc = factor(assoc, ordered = TRUE))
+    assoc = factor(assoc, ordered = TRUE)) |> 
+  dplyr::filter(assoc %in% c(0.1, 0.3, 0.7, 1.0))
 
 #### Create ggplot2 ####
 

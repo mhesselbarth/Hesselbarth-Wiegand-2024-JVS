@@ -88,15 +88,18 @@ ggplot_correct_list <- purrr::map(levels(summarized_df$species), function(i) {
   
   dplyr::filter(summarized_df, species == i) |> 
     ggplot(aes(x = association_strength, y = correct_mn, color = method)) + 
-    geom_hline(yintercept = 0.0, color = "grey", linetype = 2) +
-    geom_line(alpha = color_alpha) +
+    geom_hline(yintercept = 0.0, color = "grey", linetype = 3) +  
+    geom_hline(yintercept = 50, color = "grey", linetype = 3) +  
+    geom_hline(yintercept = 100, color = "grey", linetype = 3) +  
+    geom_vline(xintercept = 0.5, color = "grey", linetype = 3) +  
+    geom_line(alpha = color_alpha, linewidth = 0.75) +
     geom_point(size = size_point) +
-    scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+    scale_x_continuous(limits = c(0, 1), breaks = seq(0.1, 1, 0.2)) +
     scale_y_continuous(limits = c(0, 100), breaks = c(0, 25, 50, 75, 100)) +
     scale_color_manual(values = color_scale) +
     facet_grid(rows = dplyr::vars(n_random), cols  = dplyr::vars(fract_dim)) +
     labs(x = "", y = "") +
-    theme_classic(base_size = size_base) + 
+    theme_bw(base_size = size_base) + 
     theme(legend.position = "none", strip.background = element_blank(), 
           strip.text.x = strip_text_x, strip.text.y = strip_text_y, 
           axis.text.x = axis_text_x, axis.text.y = axis_text_y)
@@ -141,15 +144,18 @@ ggplot_false_list <- purrr::map(levels(summarized_df$species), function(i) {
   
   dplyr::filter(summarized_df, species == i) |> 
     ggplot(aes(x = association_strength, y = false_mn, color = method, group = method)) + 
-    geom_hline(yintercept = 0.0, color = "grey", linetype = 2) +  
-    geom_line(alpha = color_alpha) + 
+    geom_hline(yintercept = 0.0, color = "grey", linetype = 3) +  
+    geom_hline(yintercept = 50, color = "grey", linetype = 3) +  
+    geom_hline(yintercept = 100, color = "grey", linetype = 3) + 
+    geom_vline(xintercept = 0.5, color = "grey", linetype = 3) +  
+    geom_line(alpha = color_alpha, linewidth = 0.75) + 
     geom_point(size = size_point) +
-    scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
-    scale_y_continuous(limits = c(0, 100), breaks = c(0, 50, 100)) +
+    scale_x_continuous(limits = c(0, 1), breaks = seq(0.1, 1, 0.2)) +
+    scale_y_continuous(limits = c(0, 100), breaks = c(0, 25, 50, 75, 100)) +
     scale_color_manual(values = color_scale) +
     facet_grid(rows = dplyr::vars(n_random), cols  = dplyr::vars(fract_dim)) + 
     labs(x = "", y = "") +
-    theme_classic(base_size = size_base) + 
+    theme_bw(base_size = size_base) + 
     theme(legend.position = "none", strip.background = element_blank(), 
           strip.text.x = strip_text_x, strip.text.y = strip_text_y, 
           axis.text.x = axis_text_x, axis.text.y = axis_text_y)
@@ -168,7 +174,7 @@ ggplot_false_total <- cowplot::ggdraw(ggplot_false_total, xlim = c(-0.05, 1.05),
   cowplot::draw_label("Negative association [%]", x = 0.0, y = 0.25, angle = 90, size = size_base)
 
 ggplot_false_total <- cowplot::plot_grid(ggplot_false_total, cowplot::get_legend(ggplot_dummy),
-                                         nrow = 2, ncol = 1, rel_heights = c(0.95, 0.05)).
+                                         nrow = 2, ncol = 1, rel_heights = c(0.95, 0.05))
 
 #### Summarize results ####
 
@@ -176,24 +182,26 @@ diff_frag <- summarized_df |>
   dplyr::group_by(fract_dim) |>
   dplyr::group_split()
 
-t.test(diff_frag[[1]]$correct_mn, diff_frag[[2]]$correct_mn)
-t.test(diff_frag[[1]]$false_mn, diff_frag[[2]]$false_mn)
-
+# x: Low fragmentation; y: High fragmentation
+t.test(x= diff_frag[[1]]$correct_mn, y= diff_frag[[2]]$correct_mn)
+t.test(x = diff_frag[[1]]$false_mn, y = diff_frag[[2]]$false_mn)
 
 diff_null <- summarized_df |> 
   dplyr::group_by(n_random) |>
   dplyr::group_split()
 
-t.test(diff_null[[1]]$correct_mn, diff_null[[2]]$correct_mn)
-t.test(diff_null[[1]]$false_mn, diff_null[[2]]$false_mn)
+# x: 99; y: 499
+t.test(x = diff_null[[1]]$correct_mn, y = diff_null[[2]]$correct_mn)
+t.test(x = diff_null[[1]]$false_mn, y = diff_null[[2]]$false_mn)
 
 aov(correct_mn ~ species + fract_dim + n_random + method, data = summarized_df) |> summary()
 aov(false_mn ~ species + fract_dim + n_random + method, data = summarized_df) |> summary()
 
 #### Save ggplots
 
-suppoRt::save_ggplot(plot = ggplot_correct_total, filename = "4_Figures/Fig-4.png", overwrite = FALSE, 
+suppoRt::save_ggplot(plot = ggplot_correct_total, filename = "4_Figures/Fig-4.png", overwrite = T, 
                      dpi = dpi, height = width * 0.75, width = height, units = units)
 
-suppoRt::save_ggplot(plot = ggplot_false_total, filename = "4_Figures/Fig-S4.png", overwrite = FALSE, 
+suppoRt::save_ggplot(plot = ggplot_false_total, filename = "4_Figures/Fig-S4.png", overwrite = T, 
                      dpi = dpi, height = width * 0.75, width = height, units = units)
+

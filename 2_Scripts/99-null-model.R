@@ -95,8 +95,8 @@ gg_plot_null <- ggplot(data = pcf_rand_df) +
   scale_fill_manual(name = "", values = c("n random: 99" = "#AE0400", "n random: 499" = "#0085A9")) +
   labs(x = expression(paste("Distance ", italic("r"), " in meters [m]")), 
        y = expression(paste("Pair-correlation function ", italic("g(r)")))) +
-  theme_classic(base_size = 12) +
-  theme(legend.position = c(0.9, 0.9), 
+  theme_bw(base_size = 12) +
+  theme(legend.position = c(0.85, 0.9), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         strip.background = element_blank(), strip.text = element_text(hjust = 0))
 
 suppoRt::save_ggplot(plot = gg_plot_null, path = "4_Figures/", filename = "Fig-S5.png",

@@ -27,6 +27,12 @@ summarized_df <- dplyr::group_by(combined_df, method, species, fract_dim,
                                  association_strength, n_random) |> 
   dplyr::summarise(correct_mn = mean(correct) * 100, correct_sd = sd(correct) * 100,
                    false_mn = mean(false) * 100, false_sd = sd(false) * 100, .groups = "drop") |> 
+  dplyr::mutate(correct_lo = correct_mn - correct_sd, correct_hi = correct_mn + correct_sd, 
+                false_lo = false_mn - false_sd, false_hi = false_mn + false_sd) |> 
+  dplyr::mutate(correct_lo = dplyr::case_when(correct_lo < 0 ~ 0, TRUE ~ correct_lo), 
+                correct_hi = dplyr::case_when(correct_hi > 100 ~ 100, TRUE ~ correct_lo), 
+                false_lo = dplyr::case_when(false_lo < 0 ~ 0, TRUE ~ false_lo), 
+                false_hi = dplyr::case_when(false_hi > 100 ~ 100, TRUE ~ false_lo)) |>
   dplyr::mutate(method = factor(method, levels = c("gamma", "torus", "walk", "reconstruction")), 
                 species = factor(species, levels = c(1, 2, 3, 4), 
                                  labels = c("CSR (positive association)", "Cluster process (positive association)", 
@@ -34,7 +40,10 @@ summarized_df <- dplyr::group_by(combined_df, method, species, fract_dim,
                 fract_dim = factor(fract_dim, levels = c(0.5, 1.65), 
                                    labels = c("Low fragmentation", "High fragmentation")), 
                 n_random = factor(n_random, levels = c(99, 499), 
-                                  labels = c("n rand.: 99", "n rand.: 499")))
+                                  labels = c("n rand.: 99", "n rand.: 499"))) |> 
+  dplyr::select(method, species, fract_dim, n_random, association_strength, 
+                correct_mn, correct_lo, correct_hi, 
+                false_mn, false_lo, false_hi)
 
 dplyr::group_by(summarized_df, fract_dim) |> 
   dplyr::summarise(correct_mn = mean(correct_mn), false_mn = mean(false_mn))
@@ -57,7 +66,6 @@ size_point <- 1.75
 ggplot_dummy <- data.frame(method = levels(summarized_df$method),
                            association_strength = c(0, 0, 0, 0), correct_mn = c(1, 1, 1, 1)) |> 
   ggplot(aes(x = association_strength,  y = correct_mn, color = method)) + 
-  geom_line(alpha = color_alpha) + 
   geom_point(size = size_point) + 
   scale_color_manual(name = "", values = color_scale, 
                      labels = c("gamma" = "gamma-test", "torus" = "Torus-translation test", 
@@ -88,19 +96,33 @@ ggplot_correct_list <- purrr::map(levels(summarized_df$species), function(i) {
   
   dplyr::filter(summarized_df, species == i) |> 
     ggplot(aes(x = association_strength, y = correct_mn, color = method)) + 
+    
+    # adding guidelines
     geom_hline(yintercept = 0.0, color = "grey", linetype = 3) +  
     geom_hline(yintercept = 50, color = "grey", linetype = 3) +  
     geom_hline(yintercept = 100, color = "grey", linetype = 3) +  
     geom_vline(xintercept = 0.5, color = "grey", linetype = 3) +  
+    
+    # adding rates
     geom_line(alpha = color_alpha, linewidth = 0.75) +
     geom_point(size = size_point) +
+    
+    # # add errorbars
+    # geom_errorbar(aes(ymin = correct_lo, ymax = correct_hi), width = 0.0, alpha = 0.5) +
+    
+    # facet wrap by species and null model
+    facet_grid(rows = dplyr::vars(n_random), cols  = dplyr::vars(fract_dim)) +
+    
+    # set scales
     scale_x_continuous(limits = c(0, 1), breaks = seq(0.1, 1, 0.2)) +
     scale_y_continuous(limits = c(0, 100), breaks = c(0, 25, 50, 75, 100)) +
     scale_color_manual(values = color_scale) +
-    facet_grid(rows = dplyr::vars(n_random), cols  = dplyr::vars(fract_dim)) +
+    
+    # adapt theme
     labs(x = "", y = "") +
     theme_bw(base_size = size_base) + 
     theme(legend.position = "none", strip.background = element_blank(), 
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           strip.text.x = strip_text_x, strip.text.y = strip_text_y, 
           axis.text.x = axis_text_x, axis.text.y = axis_text_y)
   
@@ -144,19 +166,33 @@ ggplot_false_list <- purrr::map(levels(summarized_df$species), function(i) {
   
   dplyr::filter(summarized_df, species == i) |> 
     ggplot(aes(x = association_strength, y = false_mn, color = method, group = method)) + 
+    
+    # adding guidelines
     geom_hline(yintercept = 0.0, color = "grey", linetype = 3) +  
     geom_hline(yintercept = 50, color = "grey", linetype = 3) +  
     geom_hline(yintercept = 100, color = "grey", linetype = 3) + 
     geom_vline(xintercept = 0.5, color = "grey", linetype = 3) +  
+    
+    # adding false rates
     geom_line(alpha = color_alpha, linewidth = 0.75) + 
     geom_point(size = size_point) +
+    
+    # # add errorbars
+    # geom_errorbar(aes(ymin = false_lo, ymax = false_hi), width = 0.0, alpha = 0.5) +
+    
+    # facet wrap by species and null model
+    facet_grid(rows = dplyr::vars(n_random), cols  = dplyr::vars(fract_dim)) + 
+    
+    # set scales
     scale_x_continuous(limits = c(0, 1), breaks = seq(0.1, 1, 0.2)) +
     scale_y_continuous(limits = c(0, 100), breaks = c(0, 25, 50, 75, 100)) +
     scale_color_manual(values = color_scale) +
-    facet_grid(rows = dplyr::vars(n_random), cols  = dplyr::vars(fract_dim)) + 
+    
+    # change theme
     labs(x = "", y = "") +
     theme_bw(base_size = size_base) + 
     theme(legend.position = "none", strip.background = element_blank(), 
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           strip.text.x = strip_text_x, strip.text.y = strip_text_y, 
           axis.text.x = axis_text_x, axis.text.y = axis_text_y)
   
@@ -199,9 +235,10 @@ aov(false_mn ~ species + fract_dim + n_random + method, data = summarized_df) |>
 
 #### Save ggplots
 
-suppoRt::save_ggplot(plot = ggplot_correct_total, filename = "4_Figures/Fig-4.png", overwrite = T, 
-                     dpi = dpi, height = width * 0.75, width = height, units = units)
+suppoRt::save_ggplot(plot = ggplot_correct_total, filename = "4_Figures/Fig-4.png", 
+                     dpi = dpi, height = width * 0.75, width = height, units = units, 
+                     overwrite = FALSE)
 
-suppoRt::save_ggplot(plot = ggplot_false_total, filename = "4_Figures/Fig-S4.png", overwrite = T, 
-                     dpi = dpi, height = width * 0.75, width = height, units = units)
-
+suppoRt::save_ggplot(plot = ggplot_false_total, filename = "4_Figures/Fig-S4.png", 
+                     dpi = dpi, height = width * 0.75, width = height, units = units, 
+                     overwrite = FALSE)

@@ -62,8 +62,7 @@ pcf_sum <- dplyr::bind_rows(species_1, species_3, species_2, species_4) |>
   dplyr::mutate(species = factor(species, levels = c("csr-pos", "clu-pos", "csr-neg", "clu-neg"), 
                                  labels = c("CSR (positive association)", "Cluster process (positive association)",
                                             "CSR (negative association)", "Cluster process (negative association)")),
-    assoc = factor(assoc, ordered = TRUE)) |> 
-  dplyr::filter(assoc %in% c(0.1, 0.3, 0.7, 1.0))
+    assoc = factor(assoc, ordered = TRUE))
 
 #### Create ggplot2 ####
 
@@ -74,8 +73,9 @@ gg_pcf <- ggplot(data = pcf_sum, aes(x = r, y = iso, color = assoc)) +
   facet_wrap(. ~ species, scales = "fixed", ncol = 2, nrow = 2) + 
   labs(x = expression(paste("Distance ", italic("r"), " in meters [m]")), 
        y = expression(paste("Pair-correlation function ", italic("g(r)")))) +
-  theme_classic(base_size = 12) +
+  theme_bw(base_size = 12) +
   theme(legend.position = "bottom", strip.background = element_blank(), 
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         strip.text = element_text(hjust = 0))
 
 suppoRt::save_ggplot(plot = gg_pcf, path = "4_Figures/", filename = "Fig-S6.png",

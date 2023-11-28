@@ -39,10 +39,10 @@ example_species <- spatstat.geom::subset.ppp(simulation_pattern, species_code ==
 
 # fit clustered pattern to data
 gamma_test <- shar::fit_point_process(spatstat.geom::unmark(example_species), 
-                                      n_random = 199, process = "cluster")
+                                      n_random = 99, process = "cluster")
 
 pattern_recon <- shar::reconstruct_pattern(spatstat.geom::unmark(example_species), 
-                                           n_random = 199, max_runs = max_runs,
+                                           n_random = 99, max_runs = max_runs,
                                            method = "cluster", no_change = no_change)
 
 #### Save results ####
@@ -88,14 +88,14 @@ result_combn <- dplyr::bind_rows(gamma = result_gamma, recon = result_recon, .id
 
 # create ggplot
 gg_comparison <- ggplot(data = result_combn) + 
+  geom_hline(yintercept = 1, color = "darkgrey", linetype = 2) +
   geom_ribbon(aes(x = r, ymin = lo, ymax = hi, fill = method), alpha = 0.5) +
-  geom_line(data = pcf_observed, aes(x = r, y = theo), col = "grey", linetype = 2, linewidth = 0.5) +
   geom_line(data = pcf_observed, aes(x = r, y = iso), col = "black", linewidth = 0.75) +
   scale_fill_manual(name = "", values = c("gamma-test" = "#AE0400", "Pattern reconstruction" = "#0085A9")) + 
   labs(x = expression(paste("Distance ", italic("r"), " in meters [m]")), 
        y = expression(paste("Pair-correlation function ", italic("g(r)")))) +
   theme_classic(base_size = 12) +  
-  theme(legend.position = c(0.9, 0.9))
+  theme(legend.position = c(0.8, 0.8))
 
 suppoRt::save_ggplot(plot = gg_comparison, path = "4_Figures/", filename = "Fig-S1.png",
                      dpi = dpi, width = width, height = height * 1/2, units = units, 

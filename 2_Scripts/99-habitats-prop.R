@@ -58,12 +58,12 @@ gg_habitats <- ggplot(data = habitats_count, aes(x = habitat, y = rel_count, col
   scale_color_manual(values = MetBrewer::met.brewer(name = "Java", n = 5, type = "discrete")) +
   labs(x = "Habitat class", y = "Proportion of discrete habitat class [%]") +
   scale_y_continuous(limits = c(0, 50)) +
-  theme_classic(base_size = 12) + 
-  theme(legend.position = "none",
+  theme_bw(base_size = 12) + 
+  theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         strip.background = element_blank(), strip.text = element_text(hjust = 0))
 
 #### Save figures ####
 
 suppoRt::save_ggplot(plot = gg_habitats, path = "4_Figures/", filename = "Fig-S3.png",
                      dpi = dpi, width = width, height = height * 1/2, units = units, 
-                     overwrite = T)
+                     overwrite = FALSE)

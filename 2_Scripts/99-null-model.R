@@ -8,10 +8,8 @@
 #### Import packages & functions ####
 
 source("1_Functions/setup.R")
-
-# source all functions in R_functions folder
-list.files(path = "1_Functions/", full.names = TRUE) |> 
-  purrr::walk(function(x) source(x))
+source("1_Functions/create_simulation_pattern.R")
+source("1_Functions/create_simulation_species.R")
 
 # set seed
 set.seed(42, kind = "L'Ecuyer-CMRG")

@@ -6,10 +6,10 @@
 ##-----------------------------------------------##
 
 source("1_Functions/setup.R")
-
 source("1_Functions/detect_habitat_associations.R")
 
-simulation_experiment_list <- readRDS("3_Data/simulation_experiment_list.rds")
+simulation_experiment_list <- paste0("3_Data/simulation_experiment_list_", iterations, ".rds") |> 
+  readRDS()
 
 #### Define HPC function ####
 
@@ -118,7 +118,7 @@ globals <- c("max_runs", "no_change", # reconstruct_pattern
              "detect_habitat_associations") # helper functions
 
 sbatch_recon <- rslurm::slurm_map(x = simulation_experiment_list, f = foo_hpc,
-                                  global_objects = globals, jobname = "pattern_recon",
+                                  global_objects = globals, jobname = paste0("pattern_recon", iterations),
                                   nodes = length(simulation_experiment_list), cpus_per_node = 1, 
                                   slurm_options = list("partition" = "medium",
                                                        "time" = "48:00:00", 
@@ -132,7 +132,7 @@ suppoRt::rslurm_missing(x = sbatch_recon)
 
 pattern_recon <- rslurm::get_slurm_out(sbatch_recon, outtype = "table")
 
-suppoRt::save_rds(object = pattern_recon, filename = "pattern_recon.rds",
+suppoRt::save_rds(object = pattern_recon, filename = paste0("pattern_recon_", iterations, ".rds"),
                   path = "3_Data/", overwrite = FALSE)
 
 rslurm::cleanup_files(sbatch_recon)

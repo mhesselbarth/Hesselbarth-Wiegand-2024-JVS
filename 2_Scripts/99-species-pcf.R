@@ -9,11 +9,8 @@
 
 source("1_Functions/setup.R")
 
-# source all functions in R_functions folder
-list.files(path = "1_Functions/", full.names = TRUE) |> 
-  purrr::walk(function(x) source(x))
-
-simulation_experiment_list <- readRDS("3_Data/simulation_experiment_list.rds")
+simulation_experiment_list <- paste0("3_Data/simulation_experiment_list_", iterations, ".rds") |> 
+  readRDS()
 
 #### Extract species ####
 
@@ -69,7 +66,11 @@ pcf_sum <- dplyr::bind_rows(species_1, species_3, species_2, species_4) |>
 gg_pcf <- ggplot(data = pcf_sum, aes(x = r, y = iso, color = assoc)) +
   geom_line() + 
   geom_hline(yintercept = 1, linetype = 2, color = "grey") +
-  scale_color_viridis_d(name = "Association  strength", option = "C") +
+  scale_color_manual(values = c("#a6cee3", "#1f78b4", "#b2df8a", 
+                                "#33a02c", "#fb9a99", "#e31a1c", 
+                                "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a"), 
+                     name = "Association  strength") +
+  # scale_color_viridis_d(name = "Association  strength", option = "C") +
   facet_wrap(. ~ species, scales = "fixed", ncol = 2, nrow = 2) + 
   labs(x = expression(paste("Distance ", italic("r"), " in meters [m]")), 
        y = expression(paste("Pair-correlation function ", italic("g(r)")))) +
@@ -78,6 +79,6 @@ gg_pcf <- ggplot(data = pcf_sum, aes(x = r, y = iso, color = assoc)) +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         strip.text = element_text(hjust = 0))
 
-suppoRt::save_ggplot(plot = gg_pcf, path = "4_Figures/", filename = "Fig-S6.png",
+suppoRt::save_ggplot(plot = gg_pcf, path = "4_Figures/", filename = paste0("Fig-S6-", iterations, ".png"),
                      dpi = dpi, width = width, height = height * 1/2, units = units, 
                      overwrite = FALSE)

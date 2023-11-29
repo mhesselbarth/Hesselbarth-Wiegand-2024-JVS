@@ -52,7 +52,7 @@ n <- 5
 association_strength <- seq(from = 0.1, to = 1, by = 0.1)
 
 # number of simulation runs
-iterations <- 25
+iterations <- 50
 
 # number of iterations pattern reconstruction
 max_runs <- 10000

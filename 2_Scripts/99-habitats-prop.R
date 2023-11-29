@@ -9,7 +9,8 @@
 
 source("1_Functions/setup.R")
 
-simulation_experiment_list <- readRDS("3_Data/simulation_experiment_list.rds")
+simulation_experiment_list <- paste0("3_Data/simulation_experiment_list_", iterations, ".rds") |> 
+  readRDS()
 
 #### Extract and count habitats ####
 
@@ -64,6 +65,6 @@ gg_habitats <- ggplot(data = habitats_count, aes(x = habitat, y = rel_count, col
 
 #### Save figures ####
 
-suppoRt::save_ggplot(plot = gg_habitats, path = "4_Figures/", filename = "Fig-S3.png",
+suppoRt::save_ggplot(plot = gg_habitats, path = "4_Figures/", filename = paste0("Fig-S3-", iterations, ".png"),
                      dpi = dpi, width = width, height = height * 1/2, units = units, 
                      overwrite = FALSE)

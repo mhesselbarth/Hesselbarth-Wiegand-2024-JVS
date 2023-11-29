@@ -9,13 +9,17 @@ source("1_Functions/setup.R")
 
 #### Load data ####
 
-gamma_df <- readRDS("3_Data/gamma_test.rds")
+gamma_df <- paste0("3_Data/gamma_test_", iterations, ".rds") |> 
+  readRDS()
 
-reconstruction_df <- readRDS("3_Data/pattern_recon.rds")
+reconstruction_df <- paste0("3_Data/pattern_recon_", iterations, ".rds") |> 
+  readRDS()
 
-torus_df <- readRDS("3_Data/torus_trans.rds")
+torus_df <- paste0("3_Data/torus_trans_", iterations, ".rds") |> 
+  readRDS()
 
-walk_df <- readRDS("3_Data/habitat_random.rds")
+walk_df <- paste0("3_Data/habitat_random_", iterations, ".rds") |> 
+  readRDS()
 
 combined_df <- dplyr::bind_rows(gamma = gamma_df, reconstruction = reconstruction_df, 
                                 torus = torus_df, walk = walk_df, .id = "method") |> 
@@ -235,10 +239,10 @@ aov(false_mn ~ species + fract_dim + n_random + method, data = summarized_df) |>
 
 #### Save ggplots
 
-suppoRt::save_ggplot(plot = ggplot_correct_total, filename = "4_Figures/Fig-4.png", 
+suppoRt::save_ggplot(plot = ggplot_correct_total, filename = paste0("4_Figures/Fig-4-", iterations, ".png"), 
                      dpi = dpi, height = width * 0.75, width = height, units = units, 
                      overwrite = FALSE)
 
-suppoRt::save_ggplot(plot = ggplot_false_total, filename = "4_Figures/Fig-S4.png", 
+suppoRt::save_ggplot(plot = ggplot_false_total, filename = paste0("4_Figures/Fig-S4-", iterations, ".png"), 
                      dpi = dpi, height = width * 0.75, width = height, units = units, 
                      overwrite = FALSE)

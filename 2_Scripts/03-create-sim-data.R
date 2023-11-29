@@ -80,5 +80,6 @@ for (i in seq_along(association_strength)) {
 
 #### Save data ####
 
-suppoRt::save_rds(object = simulation_experiment_list, filename = "simulation_experiment_list.rds", 
+suppoRt::save_rds(object = simulation_experiment_list, 
+                  filename = paste0("simulation_experiment_list_", iterations, ".rds"), 
                   path = "3_Data/", overwrite = FALSE)

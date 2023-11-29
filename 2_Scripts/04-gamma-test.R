@@ -6,10 +6,10 @@
 ##-----------------------------------------------##
 
 source("1_Functions/setup.R")
-
 source("1_Functions/detect_habitat_associations.R")
 
-simulation_experiment_list <- readRDS("3_Data/simulation_experiment_list.rds")
+simulation_experiment_list <- paste0("3_Data/simulation_experiment_list_", iterations, ".rds") |> 
+  readRDS()
 
 #### Define HPC function ####
 
@@ -113,10 +113,10 @@ foo_hpc <- function(input) {
 globals <- c("detect_habitat_associations") # helper functions
 
 sbatch_gamma <- rslurm::slurm_map(x = simulation_experiment_list, f = foo_hpc,
-                                  global_objects = globals, jobname = "gamma_test",
+                                  global_objects = globals, jobname = paste0("gamma_test_", iterations),
                                   nodes = length(simulation_experiment_list), cpus_per_node = 1, 
                                   slurm_options = list("partition" = "medium",
-                                                       "time" = "06:00:00", 
+                                                       "time" = "01:00:00", 
                                                        "mem-per-cpu" = "1G"),
                                   pkgs = c("dplyr", "shar", "spatstat", "stringr", "terra"),
                                   rscript_path = rscript_path, submit = FALSE)
@@ -127,7 +127,7 @@ suppoRt::rslurm_missing(x = sbatch_gamma)
 
 gamma_test <- rslurm::get_slurm_out(sbatch_gamma, outtype = "table")
 
-suppoRt::save_rds(object = gamma_test, filename = "gamma_test.rds",
+suppoRt::save_rds(object = gamma_test, filename = paste0("gamma_test_", iterations, ".rds"),
                   path = "3_Data/", overwrite = FALSE)
 
 rslurm::cleanup_files(sbatch_gamma)

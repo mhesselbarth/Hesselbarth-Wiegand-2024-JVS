@@ -78,7 +78,7 @@ pcf_rand_df <- purrr::map_dfr(random_list, function(i) {
   dplyr::summarise(lo = quantile(iso, probs = 0.025),
                    hi = quantile(iso, probs = 0.975), .groups = "drop") |> 
   dplyr::mutate(method = factor(method, levels = c("gamma", "recon"),
-                                labels = c("gamma" = "gamma-test", "recon" = "Pattern reconstruction")), 
+                                labels = c("gamma" = "(a) gamma-test", "recon" = "(b) Pattern reconstruction")), 
                 n_null = factor(n_null, levels = c("99", "499"), 
                                 labels = c("99" = "n random: 99", "499" = "n random: 499")))
 

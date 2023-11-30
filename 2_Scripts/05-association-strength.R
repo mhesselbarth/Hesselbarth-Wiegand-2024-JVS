@@ -135,7 +135,7 @@ ggplot_correct_list <- purrr::map(levels(summarized_df$species), function(i) {
 # a: "CSR (positive association)", b: "Cluster process (positive association)", 
 # c: "CSR (negative association)", d: "Cluster process (negative association)"
 ggplot_correct_total <- cowplot::plot_grid(plotlist = ggplot_correct_list, 
-                                           labels = c("a)", "b)", "c)", "d)"),
+                                           labels = c("(a)", "(b)", "(c)", "(d)"),
                                            label_fontface = "plain")
 
 ggplot_correct_total <- cowplot::ggdraw(ggplot_correct_total, xlim = c(-0.05, 1.05), ylim = c(-0.05, 1.05)) + 
@@ -203,7 +203,7 @@ ggplot_false_list <- purrr::map(levels(summarized_df$species), function(i) {
 })
 
 # a = gamma; b = reconstruction; c = torus; d = walk
-ggplot_false_total <- cowplot::plot_grid(plotlist = ggplot_false_list, labels = c("a)", "b)", "c)", "d)"),
+ggplot_false_total <- cowplot::plot_grid(plotlist = ggplot_false_list, labels = c("(a)", "(b)", "(c)", "(d)"),
                                          label_fontface = "plain")
 
 ggplot_false_total <- cowplot::ggdraw(ggplot_false_total, xlim = c(-0.05, 1.05), ylim = c(-0.05, 1.05)) + 

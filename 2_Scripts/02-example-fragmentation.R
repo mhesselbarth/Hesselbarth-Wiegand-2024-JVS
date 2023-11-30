@@ -22,7 +22,7 @@ landscape_df <- purrr::map_dfr(fract_dim, function(i) {
     terra::as.data.frame(xy = TRUE) |> 
     dplyr::bind_cols(fract_dim = i)}) |> 
   dplyr::mutate(fract_dim = factor(fract_dim, levels = c(1.65, 0.5), 
-                                   labels = c("a)", "b)")), 
+                                   labels = c("(a) Low fragmentation", "(b) High fragmentation")), 
                 layer = factor(layer))
 
 #### Create ggplot #### 

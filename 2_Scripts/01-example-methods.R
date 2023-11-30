@@ -127,15 +127,15 @@ ggplot_walk <- ggplot() +
 #### Create total plot ####
 
 ggplot_random <- cowplot::plot_grid(ggplot_gamma, ggplot_recon, ggplot_torus, ggplot_walk,
-                                    nrow = 2, ncol = 2, labels = c("b) gamma-test            ", 
-                                                                   "c) pattern reconstruction",
-                                                                   "d) torus-translation     ", 
-                                                                   "e) randomized-habitats   "), 
+                                    nrow = 2, ncol = 2, labels = c("(b) gamma-test            ", 
+                                                                   "(c) pattern reconstruction",
+                                                                   "(d) torus-translation     ", 
+                                                                   "(e) randomized-habitats   "), 
                                     label_fontface = "plain", label_size = size_base, 
                                     label_x = 0, label_y = 0.9, hjust = -0.15)
 
 ggplot_total <- cowplot::plot_grid(ggplot_observed, ggplot_random, ncol = 2,
-                                   labels = c("a) Observed", ""), label_fontface = "plain", label_size = size_base,
+                                   labels = c("(a) Observed", ""), label_fontface = "plain", label_size = size_base,
                                    label_x = 0, label_y = 0.9)
 
 ### Save ggplot ####

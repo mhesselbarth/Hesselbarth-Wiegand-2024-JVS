@@ -24,7 +24,7 @@ habitats_count <- purrr::map_dfr(simulation_experiment_list, function(i) {
     data.frame(habitat = 1:5, rel_count = count / sum(count) * 100, 
                fract_dim = i$parameter[[1]])}, .id = "id") |> 
   dplyr::mutate(fract_dim = factor(fract_dim, levels = c(1.65, 0.5), 
-                                   labels = c("Low fragmentation", "High fragmentation")), 
+                                   labels = c("(a) Low fragmentation", "(b) High fragmentation")), 
                 habitat = factor(habitat, ordered = TRUE))
 
 dplyr::group_by(habitats_count, fract_dim) |> 
@@ -43,7 +43,7 @@ assoc_count <- purrr::map_dfr(simulation_experiment_list, function(i) {
   data.frame(species = 1:4, habitat = habitat, fract_dim = i$parameter[[1]])}, .id = "id") |> 
   dplyr::mutate(habitat = factor(habitat, ordered = TRUE), 
                 fract_dim = factor(fract_dim, levels = c(1.65, 0.5), 
-                                   labels = c("Low fragmentation", "High fragmentation"))) |> 
+                                   labels = c("(a) Low fragmentation", "(b) High fragmentation"))) |> 
   dplyr::group_by(fract_dim, habitat) |> 
   dplyr::summarise(n = dplyr::n(), .groups = "drop") |> 
   dplyr::mutate(y = 45)
@@ -67,4 +67,4 @@ gg_habitats <- ggplot(data = habitats_count, aes(x = habitat, y = rel_count, col
 
 suppoRt::save_ggplot(plot = gg_habitats, path = "4_Figures/", filename = paste0("Fig-S3-", iterations, ".png"),
                      dpi = dpi, width = width, height = height * 1/2, units = units, 
-                     overwrite = FALSE)
+                     overwrite = TRUE)

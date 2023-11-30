@@ -13,7 +13,7 @@ The repository contains the following folders (see README.txt in each folder for
 - `/2_Scripts/`
   - Folder containing `R` scripts to replicate results and figures
 - `/3_Data/`
-  - Folder containing `R` with saved data during analysis
+  - (Dummy) Folder containing `R` with saved data during analysis
 - `/4_Figures`
   -  (Dummy) Folder containing figures
 

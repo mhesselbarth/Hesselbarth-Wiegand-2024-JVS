@@ -118,7 +118,7 @@ globals <- c("max_runs", "no_change", # reconstruct_pattern
              "detect_habitat_associations") # helper functions
 
 sbatch_recon <- rslurm::slurm_map(x = simulation_experiment_list, f = foo_hpc,
-                                  global_objects = globals, jobname = paste0("pattern_recon", iterations),
+                                  global_objects = globals, jobname = paste0("pattern_recon_", iterations),
                                   nodes = length(simulation_experiment_list), cpus_per_node = 1, 
                                   slurm_options = list("partition" = "medium",
                                                        "time" = "48:00:00", 

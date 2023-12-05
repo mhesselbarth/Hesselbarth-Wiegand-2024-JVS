@@ -134,9 +134,8 @@ ggplot_correct_list <- purrr::map(levels(summarized_df$species), function(i) {
 
 # a: "CSR (positive association)", b: "Cluster process (positive association)", 
 # c: "CSR (negative association)", d: "Cluster process (negative association)"
-ggplot_correct_total <- cowplot::plot_grid(plotlist = ggplot_correct_list, 
-                                           labels = c("(a)", "(b)", "(c)", "(d)"),
-                                           label_fontface = "plain")
+ggplot_correct_total <- cowplot::plot_grid(plotlist = ggplot_correct_list, labels = c("(a)", "(b)", "(c)", "(d)"),
+                                           hjust = -0.1, label_fontface = "plain")
 
 ggplot_correct_total <- cowplot::ggdraw(ggplot_correct_total, xlim = c(-0.05, 1.05), ylim = c(-0.05, 1.05)) + 
   cowplot::draw_label("Habitat association strength", x = 0.5, y = 0, vjust = -0.5, angle = 0, size = size_base) + 
@@ -204,12 +203,12 @@ ggplot_false_list <- purrr::map(levels(summarized_df$species), function(i) {
 
 # a = gamma; b = reconstruction; c = torus; d = walk
 ggplot_false_total <- cowplot::plot_grid(plotlist = ggplot_false_list, labels = c("(a)", "(b)", "(c)", "(d)"),
-                                         label_fontface = "plain")
+                                         hjust = -0.1, label_fontface = "plain")
 
 ggplot_false_total <- cowplot::ggdraw(ggplot_false_total, xlim = c(-0.05, 1.05), ylim = c(-0.05, 1.05)) + 
   cowplot::draw_label("Habitat association strength", x = 0.5, y = 0, vjust = -0.5, angle = 0, size = size_base) + 
   cowplot::draw_label("CSR", x = 0.25, y = 1, size = size_base) + cowplot::draw_label("Clustered", x = 0.75, y = 1, size = size_base) + 
-  cowplot::draw_label("False association detected", x = -0.025, y = 0.5, angle = 90, size = size_base) +
+  cowplot::draw_label("Incorrect association detected", x = -0.025, y = 0.5, angle = 90, size = size_base) +
   cowplot::draw_label("Positive association [%]", x = 0.0, y = 0.75, angle = 90, size = size_base) + 
   cowplot::draw_label("Negative association [%]", x = 0.0, y = 0.25, angle = 90, size = size_base)
 

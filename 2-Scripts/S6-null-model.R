@@ -7,9 +7,9 @@
 
 #### Import packages & functions ####
 
-source("1_Functions/setup.R")
-source("1_Functions/create_simulation_pattern.R")
-source("1_Functions/create_simulation_species.R")
+source("1-Functions/setup.R")
+source("1-Functions/create-simulation-pattern.R")
+source("1-Functions/create-simulation-species.R")
 
 # set seed
 set.seed(42, kind = "L'Ecuyer-CMRG")
@@ -55,12 +55,12 @@ pattern_recon_499 <- shar::reconstruct_pattern(spatstat.geom::unmark(example_spe
 random_list <- list(gamma_99 = gamma_test_99, gamma_499 = gamma_test_499, 
                     recon_99 = pattern_recon_99, recon_499 = pattern_recon_499)
 
-suppoRt::save_rds(object = random_list, filename = "example_pattern_random.rds", 
+suppoRt::save_rds(object = random_list, filename = "S6_pattern_random.rds", 
                   path = "3_Data/", overwrite = FALSE)
 
 #### Create ggplot #### 
 
-random_list <- readRDS("3_Data/example_pattern_random.rds")
+random_list <- readRDS("3_Data/S6_pattern_random.rds")
 
 pcf_obs_df <- spatstat.explore::pcf.ppp(random_list$gamma_99$observed, divisor = "d", correction = "Ripley", 
                                      r = seq(from = 0, to = 250, length.out = 515)) |> 
@@ -83,9 +83,9 @@ pcf_rand_df <- purrr::map_dfr(random_list, function(i) {
                                 labels = c("99" = "n random: 99", "499" = "n random: 499")))
 
 gg_plot_null <- ggplot(data = pcf_rand_df) + 
-  geom_ribbon(aes(x = r, ymin = lo, ymax = hi, fill = n_null), alpha = 0.25) +
-  geom_line(aes(x = r, y = lo, color = n_null), alpha = 0.5) + 
-  geom_line(aes(x = r, y = hi, color = n_null), alpha = 0.5) + 
+  geom_ribbon(aes(x = r, ymin = lo, ymax = hi, fill = n_null), alpha = 0.5) +
+  geom_line(aes(x = r, y = lo, color = n_null), alpha = 0.5) +
+  geom_line(aes(x = r, y = hi, color = n_null), alpha = 0.5) +
   geom_line(data = pcf_obs_df, aes(x = r, y = theo), col = "grey", linetype = 2, linewidth = 0.5) +
   geom_line(data = pcf_obs_df, aes(x = r, y = iso)) +
   facet_wrap(. ~ method, nrow = 2) + 
@@ -97,6 +97,6 @@ gg_plot_null <- ggplot(data = pcf_rand_df) +
   theme(legend.position = c(0.85, 0.9), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         strip.background = element_blank(), strip.text = element_text(hjust = 0))
 
-suppoRt::save_ggplot(plot = gg_plot_null, path = "4_Figures/", filename = "Fig-S5.png",
+suppoRt::save_ggplot(plot = gg_plot_null, path = "4-Figures/", filename = "Fig-S6.png",
                      dpi = dpi, width = width, height = height * 1/2, units = units, 
                      overwrite = FALSE)

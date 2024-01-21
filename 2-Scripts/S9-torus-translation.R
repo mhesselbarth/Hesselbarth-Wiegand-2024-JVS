@@ -5,11 +5,10 @@
 ##    www.github.com/mhesselbarth                ##
 ##-----------------------------------------------##
 
-source("1_Functions/setup.R")
-source("1_Functions/detect_habitat_associations.R")
+source("1-Functions/setup.R")
+source("1-Functions/detect-habitat-associations.R")
 
-simulation_experiment_list <- paste0("3_Data/simulation_experiment_list_", iterations, ".rds") |> 
-  readRDS()
+simulation_experiment_list <- readRDS("3-Data/S9-sim-experiment.rds")
 
 #### Define HPC function ####
 
@@ -89,7 +88,7 @@ foo_hpc <- function(input) {
 globals <- c("detect_habitat_associations") # helper functions
 
 sbatch_torus <- rslurm::slurm_map(x = simulation_experiment_list, f = foo_hpc,
-                                  global_objects = globals, jobname = paste0("torus_trans", iterations),
+                                  global_objects = globals, jobname = "torus_trans_grad",
                                   nodes = length(simulation_experiment_list), cpus_per_node = 1, 
                                   slurm_options = list("partition" = "medium",
                                                        "time" = "01:00:00", 
@@ -103,7 +102,7 @@ suppoRt::rslurm_missing(x = sbatch_torus)
 
 torus_trans <- rslurm::get_slurm_out(sbatch_torus, outtype = "table")
 
-suppoRt::save_rds(object = torus_trans, filename = paste0("torus_trans_", iterations, ".rds"),
-                  path = "3_Data/", overwrite = FALSE)
+suppoRt::save_rds(object = torus_trans, filename = "S9-torus-trans.rds",
+                  path = "3-Data/", overwrite = FALSE)
 
 rslurm::cleanup_files(sbatch_torus)

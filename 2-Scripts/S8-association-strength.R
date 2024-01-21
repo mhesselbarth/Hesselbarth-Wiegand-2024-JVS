@@ -5,21 +5,16 @@
 ##    www.github.com/mhesselbarth                ##
 ##-----------------------------------------------##
 
-source("1_Functions/setup.R")
+source("1-Functions/setup.R")
 
 #### Load data ####
 
-gamma_df <- paste0("3_Data/gamma_test_", iterations, ".rds") |> 
-  readRDS()
+gamma_df <- readRDS("3-Data/S8-gamma-test.rds")
+reconstruction_df <- readRDS("3-Data/S8-pattern-recon.rds")
+torus_df <- readRDS("3-Data/S8-torus-trans.rds")
+walk_df <- readRDS("3-Data/S8-habitat-random.rds")
 
-reconstruction_df <- paste0("3_Data/pattern_recon_", iterations, ".rds") |> 
-  readRDS()
-
-torus_df <- paste0("3_Data/torus_trans_", iterations, ".rds") |> 
-  readRDS()
-
-walk_df <- paste0("3_Data/habitat_random_", iterations, ".rds") |> 
-  readRDS()
+simulation_experiment_list <- readRDS("3-Data/S8-sim-experiment.rds")
 
 combined_df <- dplyr::bind_rows(gamma = gamma_df, reconstruction = reconstruction_df, 
                                 torus = torus_df, walk = walk_df, .id = "method") |> 
@@ -38,13 +33,13 @@ summarized_df <- dplyr::group_by(combined_df, method, species, fract_dim,
                 false_lo = dplyr::case_when(false_lo < 0 ~ 0, TRUE ~ false_lo), 
                 false_hi = dplyr::case_when(false_hi > 100 ~ 100, TRUE ~ false_lo)) |>
   dplyr::mutate(method = factor(method, levels = c("gamma", "torus", "walk", "reconstruction")), 
-                species = factor(species, levels = c(1, 2, 3, 4), 
-                                 labels = c("CSR (positive association)", "Cluster process (positive association)", 
-                                            "CSR (negative association)", "Cluster process (negative association)")),
+                species = factor(species, levels = c(2, 4), 
+                                 labels = c("2" = "Cluster process (positive association)", 
+                                            "4" = "Cluster process (negative association)")),
                 fract_dim = factor(fract_dim, levels = c(0.5, 1.65), 
-                                   labels = c("Low fragmentation", "High fragmentation")), 
+                                   labels = c("0.5" = "Low fragmentation", "1.65" = "High fragmentation")), 
                 n_random = factor(n_random, levels = c(99, 499), 
-                                  labels = c("n rand.: 99", "n rand.: 499"))) |> 
+                                  labels = c("99" = "n rand.: 99", "499" = "n rand.: 499"))) |> 
   dplyr::select(method, species, fract_dim, n_random, association_strength, 
                 correct_mn, correct_lo, correct_hi, 
                 false_mn, false_lo, false_hi)
@@ -82,20 +77,12 @@ ggplot_dummy <- data.frame(method = levels(summarized_df$method),
 
 ggplot_correct_list <- purrr::map(levels(summarized_df$species), function(i) {
   
-  if (i %in% c("CSR (positive association)", "Cluster process (positive association)")) {
+  if (i == "Cluster process (positive association)") {
     strip_text_x <- element_text(hjust = 0.5)
     axis_text_x <- element_blank()
   } else {
     strip_text_x <- element_blank()
     axis_text_x <- NULL
-  }
-  
-  if (i %in% c("Cluster process (positive association)", "Cluster process (negative association)")) {
-    strip_text_y <- element_text(hjust = 0.5)
-    axis_text_y <- element_blank()
-  } else {
-    strip_text_y <- element_blank()
-    axis_text_y <- NULL
   }
   
   dplyr::filter(summarized_df, species == i) |> 
@@ -127,19 +114,17 @@ ggplot_correct_list <- purrr::map(levels(summarized_df$species), function(i) {
     theme_bw(base_size = size_base) + 
     theme(legend.position = "none", strip.background = element_blank(), 
           panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          strip.text.x = strip_text_x, strip.text.y = strip_text_y, 
-          axis.text.x = axis_text_x, axis.text.y = axis_text_y)
+          strip.text.x = strip_text_x, axis.text.x = axis_text_x)
   
 })
 
-# a: "CSR (positive association)", b: "Cluster process (positive association)", 
-# c: "CSR (negative association)", d: "Cluster process (negative association)"
-ggplot_correct_total <- cowplot::plot_grid(plotlist = ggplot_correct_list, labels = c("(a)", "(b)", "(c)", "(d)"),
-                                           hjust = -0.1, label_fontface = "plain")
+# a: "Cluster process (positive association)"
+# b: "Cluster process (negative association)"
+ggplot_correct_total <- cowplot::plot_grid(plotlist = ggplot_correct_list, labels = c("(a)", "(b)"),
+                                           nrow = 2, hjust = -0.1, label_fontface = "plain")
 
 ggplot_correct_total <- cowplot::ggdraw(ggplot_correct_total, xlim = c(-0.05, 1.05), ylim = c(-0.05, 1.05)) + 
   cowplot::draw_label("Habitat association strength", x = 0.5, y = 0, vjust = -0.5, angle = 0, size = size_base) + 
-  cowplot::draw_label("CSR", x = 0.275, y = 1, size = size_base) + cowplot::draw_label("Clustered", x = 0.75, y = 1, size = size_base) + 
   cowplot::draw_label("Correct association detected", x = -0.025, y = 0.5, angle = 90, size = size_base) +
   cowplot::draw_label("Positive association [%]", x = 0.0, y = 0.75, angle = 90, size = size_base) + 
   cowplot::draw_label("Negative association [%]", x = 0.0, y = 0.25, angle = 90, size = size_base)
@@ -147,73 +132,26 @@ ggplot_correct_total <- cowplot::ggdraw(ggplot_correct_total, xlim = c(-0.05, 1.
 ggplot_correct_total <- cowplot::plot_grid(ggplot_correct_total, cowplot::get_legend(ggplot_dummy),
                                            nrow = 2, ncol = 1, rel_heights = c(0.95, 0.05))
 
-#### Create ggplot false detections ####
+#### Plot pattern ####
 
-ggplot_false_list <- purrr::map(levels(summarized_df$species), function(i) {
-  
-  if (i %in% c("CSR (positive association)", "Cluster process (positive association)")) {
-    strip_text_x <- element_text(hjust = 0)
-    axis_text_x <- element_blank()
-  } else {
-    strip_text_x <- element_blank()
-    axis_text_x <- NULL
-  }
-  
-  if (i %in% c("Cluster process (positive association)", "Cluster process (negative association)")) {
-    strip_text_y <- element_text(hjust = 0)
-    axis_text_y <- element_blank()
-  } else {
-    strip_text_y <- element_blank()
-    axis_text_y <- NULL
-  }
-  
-  dplyr::filter(summarized_df, species == i) |> 
-    ggplot(aes(x = association_strength, y = false_mn, color = method, group = method)) + 
-    
-    # adding guidelines
-    geom_hline(yintercept = 0.0, color = "grey", linetype = 3) +  
-    geom_hline(yintercept = 50, color = "grey", linetype = 3) +  
-    geom_hline(yintercept = 100, color = "grey", linetype = 3) + 
-    geom_vline(xintercept = 0.5, color = "grey", linetype = 3) +  
-    
-    # adding false rates
-    geom_line(alpha = color_alpha, linewidth = 0.75) + 
-    geom_point(size = size_point) +
-    
-    # # add errorbars
-    # geom_errorbar(aes(ymin = false_lo, ymax = false_hi), width = 0.0, alpha = 0.5) +
-    
-    # facet wrap by species and null model
-    facet_grid(rows = dplyr::vars(n_random), cols  = dplyr::vars(fract_dim)) + 
-    
-    # set scales
-    scale_x_continuous(limits = c(0, 1), breaks = seq(0.1, 1, 0.2)) +
-    scale_y_continuous(limits = c(0, 100), breaks = c(0, 25, 50, 75, 100)) +
-    scale_color_manual(values = color_scale) +
-    
-    # change theme
-    labs(x = "", y = "") +
-    theme_bw(base_size = size_base) + 
-    theme(legend.position = "none", strip.background = element_blank(), 
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          strip.text.x = strip_text_x, strip.text.y = strip_text_y, 
-          axis.text.x = axis_text_x, axis.text.y = axis_text_y)
-  
-})
+gg_pattern <- as.data.frame(simulation_experiment_list[[50]]$pattern) |> 
+  ggplot() + 
+  geom_point(aes(x = x, y = y, color = factor(species_code)), 
+             shape = 1, cex = 1) +
+  geom_polygon(data = as.data.frame(simulation_experiment_list[[1]]$pattern$window), 
+               aes(x = x, y = y), fill = NA, color = "black") +
+  # facet_wrap(. ~ species_code) +
+  coord_equal() +
+  scale_color_manual(name = "Association type", values = c("2" = "#007895", "4" = "#e93c26"), 
+                     labels = c("2" = "postive", "4" = "negative")) + 
+  theme_void(base_size = size_base) + 
+  theme(legend.position = "bottom", strip.text = element_blank())
 
-# a = gamma; b = reconstruction; c = torus; d = walk
-ggplot_false_total <- cowplot::plot_grid(plotlist = ggplot_false_list, labels = c("(a)", "(b)", "(c)", "(d)"),
-                                         hjust = -0.1, label_fontface = "plain")
-
-ggplot_false_total <- cowplot::ggdraw(ggplot_false_total, xlim = c(-0.05, 1.05), ylim = c(-0.05, 1.05)) + 
-  cowplot::draw_label("Habitat association strength", x = 0.5, y = 0, vjust = -0.5, angle = 0, size = size_base) + 
-  cowplot::draw_label("CSR", x = 0.25, y = 1, size = size_base) + cowplot::draw_label("Clustered", x = 0.75, y = 1, size = size_base) + 
-  cowplot::draw_label("Incorrect association detected", x = -0.025, y = 0.5, angle = 90, size = size_base) +
-  cowplot::draw_label("Positive association [%]", x = 0.0, y = 0.75, angle = 90, size = size_base) + 
-  cowplot::draw_label("Negative association [%]", x = 0.0, y = 0.25, angle = 90, size = size_base)
-
-ggplot_false_total <- cowplot::plot_grid(ggplot_false_total, cowplot::get_legend(ggplot_dummy),
-                                         nrow = 2, ncol = 1, rel_heights = c(0.95, 0.05))
+# #### Create final plot ####
+# 
+# ggplot_final <- cowplot::plot_grid(ggplot_correct_total, gg_pattern, labels = c("", "(c)"), 
+#                                    ncol = 2, hjust = -0.1, vjust = 20, label_fontface = "plain", 
+#                                    rel_widths = c(0.8, 0.2))
 
 #### Summarize results ####
 
@@ -223,7 +161,6 @@ diff_frag <- summarized_df |>
 
 # x: Low fragmentation; y: High fragmentation
 t.test(x= diff_frag[[1]]$correct_mn, y= diff_frag[[2]]$correct_mn)
-t.test(x = diff_frag[[1]]$false_mn, y = diff_frag[[2]]$false_mn)
 
 diff_null <- summarized_df |> 
   dplyr::group_by(n_random) |>
@@ -231,17 +168,15 @@ diff_null <- summarized_df |>
 
 # x: 99; y: 499
 t.test(x = diff_null[[1]]$correct_mn, y = diff_null[[2]]$correct_mn)
-t.test(x = diff_null[[1]]$false_mn, y = diff_null[[2]]$false_mn)
 
 aov(correct_mn ~ species + fract_dim + n_random + method, data = summarized_df) |> summary()
-aov(false_mn ~ species + fract_dim + n_random + method, data = summarized_df) |> summary()
 
 #### Save ggplots
 
-suppoRt::save_ggplot(plot = ggplot_correct_total, filename = paste0("4_Figures/Fig-4-", iterations, ".png"), 
-                     dpi = dpi, height = width * 0.75, width = height, units = units, 
+suppoRt::save_ggplot(plot = gg_pattern, filename = "4-Figures/Fig-S8-1.png", 
+                     dpi = dpi, height = height * 1/2, width = width, units = units, 
                      overwrite = FALSE)
 
-suppoRt::save_ggplot(plot = ggplot_false_total, filename = paste0("4_Figures/Fig-S4-", iterations, ".png"), 
-                     dpi = dpi, height = width * 0.75, width = height, units = units, 
+suppoRt::save_ggplot(plot = ggplot_correct_total, filename = "4-Figures/Fig-S8-2.png", 
+                     dpi = dpi, height = height * 2/3, width = width, units = units, 
                      overwrite = FALSE)

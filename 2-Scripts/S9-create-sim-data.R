@@ -5,10 +5,9 @@
 ##    www.github.com/mhesselbarth                ##
 ##-----------------------------------------------##
 
-source("1_Functions/setup.R")
-
-source("1_Functions/create_simulation_pattern.R")
-source("1_Functions/create_simulation_species.R")
+source("1-Functions/setup.R")
+source("1-Functions/create-simulation-pattern.R")
+source("1-Functions/create-simulation-species.R")
 
 RandomFields::RFoptions(install = "no")
 
@@ -32,9 +31,8 @@ for (i in seq_along(association_strength)) {
     for (k in seq_along(n_random)) {
       
       # create simulation landscape with n discrete classes
-      simulation_habitat <- NLMR::nlm_fbm(ncol = number_cols, nrow = number_rows, resolution = resolution,
-                                          fract_dim = fract_dim[[j]],
-                                          verbose = FALSE, cPrintlevel = 0) |>
+      simulation_habitat <- NLMR::nlm_planargradient(ncol = number_cols, nrow = number_rows, 
+                                                   resolution = resolution) |>
         terra::rast() |>
         shar::classify_habitats(n = n, style = "fisher")
 
@@ -49,10 +47,9 @@ for (i in seq_along(association_strength)) {
         # in x times of repetitions, create new simulation data
         if (runif(n = 1) < 1/4) {
           
-          # create simulation landscape with 5 discrete classes
-          simulation_habitat <- NLMR::nlm_fbm(ncol = number_cols, nrow = number_rows, resolution = resolution,
-                                              fract_dim = fract_dim[[j]],
-                                              verbose = FALSE, cPrintlevel = 0) |> 
+          # create simulation landscape with n discrete classes
+          simulation_habitat <- NLMR::nlm_planargradient(ncol = number_cols, nrow = number_rows, 
+                                                         resolution = resolution) |>
             terra::rast() |>
             shar::classify_habitats(n = n, style = "fisher")
           
@@ -78,8 +75,14 @@ for (i in seq_along(association_strength)) {
   } 
 }
 
+# purrr::map_dfr(simulation_experiment_list, function(i) {
+# 
+#   as.data.frame(i$pattern) |>
+#     dplyr::group_by(species) |>
+#     dplyr::summarise(n = dplyr::n())}, .id = "id") |>
+#   dplyr::filter(n <= 10)
+
 #### Save data ####
 
-suppoRt::save_rds(object = simulation_experiment_list, 
-                  filename = paste0("simulation_experiment_list_", iterations, ".rds"), 
-                  path = "3_Data/", overwrite = FALSE)
+suppoRt::save_rds(object = simulation_experiment_list, filename = "S9-sim-experiment.rds", 
+                  path = "3-Data/", overwrite = FALSE)

@@ -15,7 +15,7 @@
 #' @return ppp object of the spatstat package with simulated species
 
 #' @export
-create_simulation_pattern <- function(raster, number_points = 100, association_strength = 0.3){
+create_simulation_pattern <- function(raster, number_points = 100, mu = 5, association_strength = 0.3){
   
   extent_raster <- terra::ext(raster)
   
@@ -41,7 +41,7 @@ create_simulation_pattern <- function(raster, number_points = 100, association_s
   
   species_2 <- create_simulation_species(habitats_poly = habitats_poly,
                                          owin_overall = owin_overall,
-                                         type = "positive", process = "Thomas",
+                                         type = "positive", process = "Thomas", mu = mu,
                                          habitat = habitat_2, 
                                          number_points = number_points,
                                          association_strength = association_strength,
@@ -63,7 +63,7 @@ create_simulation_pattern <- function(raster, number_points = 100, association_s
   
   species_4 <- create_simulation_species(habitats_poly = habitats_poly, 
                                          owin_overall = owin_overall,
-                                         type = "negative", process = "Thomas",
+                                         type = "negative", process = "Thomas", mu = mu,
                                          habitat = habitat_4,
                                          number_points = number_points, 
                                          association_strength = association_strength,

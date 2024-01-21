@@ -7,10 +7,9 @@
 
 #### Import packages & functions ####
 
-source("1_Functions/setup.R")
+source("1-Functions/setup.R")
 
-simulation_experiment_list <- paste0("3_Data/simulation_experiment_list_", iterations, ".rds") |> 
-  readRDS()
+simulation_experiment_list <- readRDS("3-Data/main-sim-experiment.rds")
 
 #### Extract and count habitats ####
 
@@ -28,7 +27,8 @@ habitats_count <- purrr::map_dfr(simulation_experiment_list, function(i) {
                 habitat = factor(habitat, ordered = TRUE))
 
 dplyr::group_by(habitats_count, fract_dim) |> 
-  dplyr::summarise(min = round(min(rel_count), 1), max = round(max(rel_count), 1))
+  dplyr::summarise(min = round(min(rel_count), 1), max = round(max(rel_count), 1), 
+                   mean = round(mean(rel_count), 1), sd = round(sd(rel_count), 1))
 
 #### Association count #### 
 
@@ -46,7 +46,7 @@ assoc_count <- purrr::map_dfr(simulation_experiment_list, function(i) {
                                    labels = c("(a) Low fragmentation", "(b) High fragmentation"))) |> 
   dplyr::group_by(fract_dim, habitat) |> 
   dplyr::summarise(n = dplyr::n(), .groups = "drop") |> 
-  dplyr::mutate(y = 45)
+  dplyr::mutate(y = 50)
 
 #### Create ggplot ###
 
@@ -57,7 +57,7 @@ gg_habitats <- ggplot(data = habitats_count, aes(x = habitat, y = rel_count, col
   geom_hline(yintercept = 0, linetype = 2, color = "grey") +
   facet_wrap(. ~ fract_dim) + 
   scale_color_manual(values = MetBrewer::met.brewer(name = "Java", n = 5, type = "discrete")) +
-  labs(x = "Habitat class", y = "Proportion of discrete habitat class [%]") +
+  labs(x = "Habitat class", y = "Relative area of discrete habitat class [%]") +
   scale_y_continuous(limits = c(0, 50)) +
   theme_bw(base_size = 12) + 
   theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -65,6 +65,6 @@ gg_habitats <- ggplot(data = habitats_count, aes(x = habitat, y = rel_count, col
 
 #### Save figures ####
 
-suppoRt::save_ggplot(plot = gg_habitats, path = "4_Figures/", filename = paste0("Fig-S3-", iterations, ".png"),
+suppoRt::save_ggplot(plot = gg_habitats, path = "4-Figures/", filename = "Fig-S3.png",
                      dpi = dpi, width = width, height = height * 1/2, units = units, 
-                     overwrite = TRUE)
+                     overwrite = FALSE)

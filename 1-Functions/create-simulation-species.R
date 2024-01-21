@@ -18,7 +18,7 @@
 #' @export
 create_simulation_species <- function(habitats_poly, habitat, owin_overall, 
                                       type, process, association_strength = 0.3,
-                                      number_points = 100, species_code = 0, verbose = TRUE) {
+                                      number_points = 100, mu = 5, species_code = 0, verbose = TRUE) {
   
   scale <- mean(diff(owin_overall$yrange), diff(owin_overall$xrange)) / 25
   
@@ -59,14 +59,22 @@ create_simulation_species <- function(habitats_poly, habitat, owin_overall,
     
   } else if (process == "Thomas") {
     
-    pattern_a <- spatstat.random::rThomas(kappa = (number_points / spatstat.geom::area.owin(owin_overall)) / 5, 
-                                          scale = scale, mu = 5, win = owin_overall)
+    pattern_a <- spatstat.random::rThomas(kappa = (number_points / spatstat.geom::area.owin(owin_overall)) / mu, 
+                                          scale = scale, mu = mu, win = owin_overall)
+    
+    # make sure pattern_n is not empty
+    while (pattern_a$n < floor(mu * 0.5)) {
+      
+      pattern_a <- spatstat.random::rThomas(kappa = (number_points / spatstat.geom::area.owin(owin_overall)) / mu, 
+                                            scale = scale, mu = mu, win = owin_overall)
+      
+    }
     
     # create lambda within habitat only
-    lambda <- density(pattern_a) |> 
+    lambda <- spatstat.explore::density.ppp(pattern_a, positive = TRUE) |> 
       terra::rast() |> 
       terra::mask(mask = habitats_poly[habitats_poly$layer == habitat, ]) |> 
-      terra::as.data.frame(xy = TRUE) |> 
+      terra::as.data.frame(xy = TRUE, na.rm = FALSE) |> 
       spatstat.geom::as.im()
       
     if (type == "positive") {
@@ -105,8 +113,23 @@ create_simulation_species <- function(habitats_poly, habitat, owin_overall,
     
   }
     
-  marks_pattern <- data.frame(species = species, species_code = species_code, 
-                              habitat = rep(habitat, pattern$n))
+  # FIXME: Something can be empty here?
+  tryCatch(expr = {
+
+    marks_pattern <- data.frame(species = species, species_code = species_code, 
+                                habitat = rep(habitat, pattern$n))}, 
+    
+    error = function(e) {
+      
+      print(species)
+      print(species_code)
+      print(rep(habitat, pattern$n))
+      
+      stop("Damn")
+      
+    }
+  )
+
   
   spatstat.geom::marks(pattern) <- marks_pattern
   

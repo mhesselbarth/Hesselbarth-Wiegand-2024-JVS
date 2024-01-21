@@ -7,10 +7,9 @@
 
 #### Import packages & functions ####
 
-source("1_Functions/setup.R")
+source("1-Functions/setup.R")
 
-simulation_experiment_list <- paste0("3_Data/simulation_experiment_list_", iterations, ".rds") |> 
-  readRDS()
+simulation_experiment_list <- readRDS("3-Data/main-sim-experiment.rds")
 
 #### Extract species ####
 
@@ -79,6 +78,6 @@ gg_pcf <- ggplot(data = pcf_sum, aes(x = r, y = iso, color = assoc)) +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         strip.text = element_text(hjust = 0))
 
-suppoRt::save_ggplot(plot = gg_pcf, path = "4_Figures/", filename = paste0("Fig-S6-", iterations, ".png"),
+suppoRt::save_ggplot(plot = gg_pcf, path = "4-Figures/", filename = "Fig-S7.png",
                      dpi = dpi, width = width, height = height * 1/2, units = units, 
                      overwrite = FALSE)

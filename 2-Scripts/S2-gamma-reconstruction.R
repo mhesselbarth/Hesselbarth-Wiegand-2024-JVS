@@ -7,9 +7,9 @@
 
 #### Import packages & functions ####
 
-source("1_Functions/setup.R")
-source("1_Functions/create_simulation_pattern.R")
-source("1_Functions/create_simulation_species.R")
+source("1-Functions/setup.R")
+source("1-Functions/create-simulation-pattern.R")
+source("1-Functions/create-simulation-species.R")
 
 # set seed
 set.seed(42, kind = "L'Ecuyer-CMRG")
@@ -45,17 +45,17 @@ pattern_recon <- shar::reconstruct_pattern(spatstat.geom::unmark(example_species
 
 #### Save results ####
 
-suppoRt::save_rds(object = gamma_test, filename = "appendix_gamma_test.rds",
+suppoRt::save_rds(object = gamma_test, filename = "S2_gamma_test.rds",
                   path = "3_Data/", overwrite = FALSE)
 
-suppoRt::save_rds(object = pattern_recon, filename = "appendix_pattern_recon.rds",
+suppoRt::save_rds(object = pattern_recon, filename = "S2_pattern_recon.rds",
                   path = "3_Data/", overwrite = FALSE)
 
 #### Create figures ####
 
 # read data
-gamma <- readr::read_rds("3_Data/appendix_gamma_test.rds")
-recon <- readr::read_rds("3_Data/appendix_pattern_recon.rds")
+gamma <- readr::read_rds("3_Data/S2_gamma_test.rds")
+recon <- readr::read_rds("3_Data/S2_pattern_recon.rds")
 
 # calculate pcf of inital pattern
 pcf_observed <- spatstat.explore::pcf.ppp(gamma$observed, divisor = "d", correction = "Ripley", 
@@ -95,6 +95,6 @@ gg_comparison <- ggplot(data = result_combn) +
   theme_classic(base_size = 12) +  
   theme(legend.position = c(0.8, 0.8))
 
-suppoRt::save_ggplot(plot = gg_comparison, path = "4_Figures/", filename = "Fig-S1.png",
+suppoRt::save_ggplot(plot = gg_comparison, path = "4-Figures/", filename = "Fig-S2.png",
                      dpi = dpi, width = width, height = height * 1/2, units = units, 
                      overwrite = FALSE)

@@ -5,11 +5,10 @@
 ##    www.github.com/mhesselbarth                ##
 ##-----------------------------------------------##
 
-source("1_Functions/setup.R")
-source("1_Functions/detect_habitat_associations.R")
+source("1-Functions/setup.R")
+source("1-Functions/detect-habitat-associations.R")
 
-simulation_experiment_list <- paste0("3_Data/simulation_experiment_list_", iterations, ".rds") |> 
-  readRDS()
+simulation_experiment_list <- readRDS("3-Data/main-sim-experiment.rds")
 
 #### Define HPC function ####
 
@@ -31,15 +30,19 @@ foo_hpc <- function(input) {
   names_species <- as.character(unique(simulation_pattern$marks$species))
   
   # randomize habitats using randomization algorithm
-  random_habitats <- shar::randomize_raster(raster = simulation_habitat,
-                                            n_random = n_random, verbose = FALSE)
+  torus_trans <- shar::translate_raster(raster = simulation_habitat, verbose = FALSE)
+  
+  # sample n_random raster
+  subset_id <- sample(x = seq_along(torus_trans$randomized), size = n_random)
+  
+  torus_trans$randomized <- torus_trans$randomized[subset_id]
   
   # results of species-habitat associations
   
   # species 1
   
   associations_species_1 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 1) |> 
-    shar::results_habitat_association(pattern = _, raster = random_habitats, verbose = FALSE)
+    shar::results_habitat_association(pattern = _, raster = torus_trans, verbose = FALSE)
   
   # count correct/false detections of species-habitat associations
   detection_species_1 <- detect_habitat_associations(input = associations_species_1, 
@@ -48,7 +51,7 @@ foo_hpc <- function(input) {
   # species 2
   
   associations_species_2 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 2) |> 
-    shar::results_habitat_association(pattern = _, raster = random_habitats, verbose = FALSE)
+    shar::results_habitat_association(pattern = _, raster = torus_trans, verbose = FALSE)
   
   # count correct/false detections of species-habitat associations
   detection_species_2 <- detect_habitat_associations(input = associations_species_2, 
@@ -57,7 +60,7 @@ foo_hpc <- function(input) {
   # species 3
   
   associations_species_3 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 3) |> 
-    shar::results_habitat_association(pattern = _, raster = random_habitats, verbose = FALSE)
+    shar::results_habitat_association(pattern = _, raster = torus_trans, verbose = FALSE)
   
   # count correct/false detections of species-habitat associations
   detection_species_3 <- detect_habitat_associations(input = associations_species_3,
@@ -66,7 +69,7 @@ foo_hpc <- function(input) {
   # species 4
   
   associations_species_4 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 4) |> 
-    shar::results_habitat_association(pattern = _, raster = random_habitats, verbose = FALSE)
+    shar::results_habitat_association(pattern = _, raster = torus_trans, verbose = FALSE)
   
   # count correct/false detections of species-habitat associations
   detection_species_4 <- detect_habitat_associations(input = associations_species_4, 
@@ -77,29 +80,29 @@ foo_hpc <- function(input) {
                    "3" = detection_species_3, "4" = detection_species_4, .id = "species") |> 
     dplyr::mutate(fract_dim = fract_dim, n_random = n_random, association_strength = association_strength, 
                   .before = species)
-
+  
 }
 
 #### Submit HPC ####
 
 globals <- c("detect_habitat_associations") # helper functions
 
-sbatch_habitat <- rslurm::slurm_map(x = simulation_experiment_list, f = foo_hpc,
-                                    global_objects = globals, jobname = paste0("habitat_random", iterations),
-                                    nodes = length(simulation_experiment_list), cpus_per_node = 1, 
-                                    slurm_options = list("partition" = "medium",
-                                                         "time" = "03:00:00",
-                                                         "mem-per-cpu" = "1G"),
-                                    pkgs = c("dplyr", "shar", "spatstat.geom", "stringr", "terra"),
-                                    rscript_path = rscript_path, submit = FALSE)
+sbatch_torus <- rslurm::slurm_map(x = simulation_experiment_list, f = foo_hpc,
+                                  global_objects = globals, jobname = "torus_trans",
+                                  nodes = length(simulation_experiment_list), cpus_per_node = 1, 
+                                  slurm_options = list("partition" = "medium",
+                                                       "time" = "01:00:00", 
+                                                       "mem-per-cpu" = "1G"),
+                                  pkgs = c("dplyr", "shar", "spatstat.geom", "stringr", "terra"),
+                                  rscript_path = rscript_path, submit = FALSE)
 
 #### Collect results #### 
 
-suppoRt::rslurm_missing(x = sbatch_habitat)
+suppoRt::rslurm_missing(x = sbatch_torus)
 
-habitat_random <- rslurm::get_slurm_out(sbatch_habitat, outtype = "table")
+torus_trans <- rslurm::get_slurm_out(sbatch_torus, outtype = "table")
 
-suppoRt::save_rds(object = habitat_random, filename = paste0("habitat_random_", iterations, ".rds"),
-                  path = "3_Data/", overwrite = FALSE)
+suppoRt::save_rds(object = torus_trans, filename = "main-torus-trans.rds",
+                  path = "3-Data/", overwrite = FALSE)
 
-rslurm::cleanup_files(sbatch_habitat)
+rslurm::cleanup_files(sbatch_torus)

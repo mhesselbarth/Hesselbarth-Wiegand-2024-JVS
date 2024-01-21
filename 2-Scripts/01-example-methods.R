@@ -5,10 +5,10 @@
 ##    www.github.com/mhesselbarth                ##
 ##-----------------------------------------------##
 
-source("1_Functions/setup.R")
+source("1-Functions/setup.R")
 
-source("1_Functions/create_simulation_pattern.R")
-source("1_Functions/create_simulation_species.R")
+source("1-Functions/create-simulation-pattern.R")
+source("1-Functions/create-simulation-species.R")
 
 RandomFields::RFoptions(install = "no")
 
@@ -140,5 +140,5 @@ ggplot_total <- cowplot::plot_grid(ggplot_observed, ggplot_random, ncol = 2,
 
 ### Save ggplot ####
 
-suppoRt::save_ggplot(plot = ggplot_total, filename = "4_Figures/Fig-1.png", overwrite = FALSE, 
+suppoRt::save_ggplot(plot = ggplot_total, filename = "4-Figures/Fig-1.png", overwrite = FALSE, 
                      dpi = dpi, height = height * 0.5, width = width, units = units)

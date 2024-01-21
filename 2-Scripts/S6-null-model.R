@@ -55,12 +55,12 @@ pattern_recon_499 <- shar::reconstruct_pattern(spatstat.geom::unmark(example_spe
 random_list <- list(gamma_99 = gamma_test_99, gamma_499 = gamma_test_499, 
                     recon_99 = pattern_recon_99, recon_499 = pattern_recon_499)
 
-suppoRt::save_rds(object = random_list, filename = "S6_pattern_random.rds", 
+suppoRt::save_rds(object = random_list, filename = "S6-pattern-random.rds", 
                   path = "3_Data/", overwrite = FALSE)
 
 #### Create ggplot #### 
 
-random_list <- readRDS("3_Data/S6_pattern_random.rds")
+random_list <- readRDS("3_Data/S6-pattern-random.rds")
 
 pcf_obs_df <- spatstat.explore::pcf.ppp(random_list$gamma_99$observed, divisor = "d", correction = "Ripley", 
                                      r = seq(from = 0, to = 250, length.out = 515)) |> 

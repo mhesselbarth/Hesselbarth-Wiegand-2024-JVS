@@ -35,15 +35,6 @@ foo_hpc <- function(input) {
   
   # results of species-habitat associations
   
-  # species 1
-  
-  associations_species_1 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 1) |> 
-    shar::results_habitat_association(pattern = _, raster = random_habitats, verbose = FALSE)
-  
-  # count correct/false detections of species-habitat associations
-  detection_species_1 <- detect_habitat_associations(input = associations_species_1, 
-                                                     species_type = names_species[1])
-  
   # species 2
   
   associations_species_2 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 2) |> 
@@ -51,16 +42,7 @@ foo_hpc <- function(input) {
   
   # count correct/false detections of species-habitat associations
   detection_species_2 <- detect_habitat_associations(input = associations_species_2, 
-                                                     species_type = names_species[2])
-  
-  # species 3
-  
-  associations_species_3 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 3) |> 
-    shar::results_habitat_association(pattern = _, raster = random_habitats, verbose = FALSE)
-  
-  # count correct/false detections of species-habitat associations
-  detection_species_3 <- detect_habitat_associations(input = associations_species_3,
-                                                     species_type = names_species[3])
+                                                     species_type = names_species[1])
   
   # species 4
   
@@ -69,14 +51,13 @@ foo_hpc <- function(input) {
   
   # count correct/false detections of species-habitat associations
   detection_species_4 <- detect_habitat_associations(input = associations_species_4, 
-                                                     species_type = names_species[4])
+                                                     species_type = names_species[2])
   
   # combine results of current association strength to one data frame
-  dplyr::bind_rows("1" = detection_species_1, "2" = detection_species_2, 
-                   "3" = detection_species_3, "4" = detection_species_4, .id = "species") |> 
+  dplyr::bind_rows("2" = detection_species_2, "4" = detection_species_4, .id = "species") |> 
     dplyr::mutate(fract_dim = fract_dim, n_random = n_random, association_strength = association_strength, 
                   .before = species)
-  
+
 }
 
 #### Submit HPC ####
@@ -84,7 +65,7 @@ foo_hpc <- function(input) {
 globals <- c("detect_habitat_associations") # helper functions
 
 sbatch_habitat <- rslurm::slurm_map(x = simulation_experiment_list, f = foo_hpc,
-                                    global_objects = globals, jobname = "habitat_random_grad",
+                                    global_objects = globals, jobname = "habitat_random_cluster",
                                     nodes = length(simulation_experiment_list), cpus_per_node = 1, 
                                     slurm_options = list("partition" = "medium",
                                                          "time" = "03:00:00",

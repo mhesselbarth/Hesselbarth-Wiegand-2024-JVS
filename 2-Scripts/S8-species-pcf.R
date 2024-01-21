@@ -78,6 +78,6 @@ gg_pcf <- ggplot(data = pcf_sum, aes(x = r, y = iso, color = assoc)) +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         strip.text = element_text(hjust = 0))
 
-suppoRt::save_ggplot(plot = gg_pcf, path = "4-Figures/", filename = "Fig-S7.png",
+suppoRt::save_ggplot(plot = gg_pcf, path = "4-Figures/", filename = "Fig-S8.png",
                      dpi = dpi, width = width, height = height * 1/2, units = units, 
                      overwrite = FALSE)

@@ -9,12 +9,12 @@ source("1-Functions/setup.R")
 
 #### Load data ####
 
-gamma_df <- readRDS("3-Data/S9-gamma-test.rds")
-reconstruction_df <- readRDS("3-Data/S9-pattern-recon.rds")
-torus_df <- readRDS("3-Data/S9-torus-trans.rds")
-walk_df <- readRDS("3-Data/S9-habitat-random.rds")
+gamma_df <- readRDS("3-Data/S7-gamma-test.rds")
+reconstruction_df <- readRDS("3-Data/S7-pattern-recon.rds")
+torus_df <- readRDS("3-Data/S7-torus-trans.rds")
+walk_df <- readRDS("3-Data/S7-habitat-random.rds")
 
-simulation_experiment_list <- readRDS("3-Data/S9-sim-experiment.rds")
+simulation_experiment_list <- readRDS("3-Data/S7-sim-experiment.rds")
 
 combined_df <- dplyr::bind_rows(gamma = gamma_df, reconstruction = reconstruction_df, 
                                 torus = torus_df, walk = walk_df, .id = "method") |> 
@@ -176,10 +176,10 @@ aov(correct_mn ~ species + fract_dim + n_random + method, data = summarized_df) 
 
 #### Save ggplots
 
-suppoRt::save_ggplot(plot = gg_gradient, filename = "4-Figures/Fig-S9-1.png", 
+suppoRt::save_ggplot(plot = gg_gradient, filename = "4-Figures/Fig-S7-1.png", 
                      dpi = dpi, height = height * 0.5, width = width, units = units, 
                      overwrite = FALSE)
 
-suppoRt::save_ggplot(plot = ggplot_correct_total, filename = "4-Figures/Fig-S9-2.png", 
+suppoRt::save_ggplot(plot = ggplot_correct_total, filename = "4-Figures/Fig-S7-2.png", 
                      dpi = dpi, height = width * 0.75, width = height, units = units, 
                      overwrite = FALSE)

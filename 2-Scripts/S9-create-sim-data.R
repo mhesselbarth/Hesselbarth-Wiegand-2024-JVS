@@ -31,15 +31,19 @@ for (i in seq_along(association_strength)) {
     for (k in seq_along(n_random)) {
       
       # create simulation landscape with n discrete classes
-      simulation_habitat <- NLMR::nlm_planargradient(ncol = number_cols, nrow = number_rows, 
-                                                   resolution = resolution) |>
+      simulation_habitat <- NLMR::nlm_fbm(ncol = number_cols, nrow = number_rows, resolution = resolution,
+                                          fract_dim = fract_dim[[j]],
+                                          verbose = FALSE, cPrintlevel = 0) |>
         terra::rast() |>
         shar::classify_habitats(n = n, style = "fisher")
-
+      
       # create simulation pattern
       simulation_pattern <- create_simulation_pattern(raster = simulation_habitat,
-                                                      number_points = number_points,
+                                                      number_points = number_points, mu = 35,
                                                       association_strength = association_strength[[i]])
+      
+      # keep only clustered
+      simulation_pattern <- spatstat.geom::subset.ppp(simulation_pattern, species_code %in% c(2, 4))
       
       # save results for each iteration/repetition
       for (l in seq_len(iterations)) {
@@ -47,16 +51,20 @@ for (i in seq_along(association_strength)) {
         # in x times of repetitions, create new simulation data
         if (runif(n = 1) < 1/4) {
           
-          # create simulation landscape with n discrete classes
-          simulation_habitat <- NLMR::nlm_planargradient(ncol = number_cols, nrow = number_rows, 
-                                                         resolution = resolution) |>
+          # create simulation landscape with 5 discrete classes
+          simulation_habitat <- NLMR::nlm_fbm(ncol = number_cols, nrow = number_rows, resolution = resolution,
+                                              fract_dim = fract_dim[[j]],
+                                              verbose = FALSE, cPrintlevel = 0) |> 
             terra::rast() |>
             shar::classify_habitats(n = n, style = "fisher")
           
-          # create simulation pattern with 4 species  
+          # create simulation pattern
           simulation_pattern <- create_simulation_pattern(raster = simulation_habitat,
-                                                          number_points = number_points,
+                                                          number_points = number_points, mu = 35,
                                                           association_strength = association_strength[[i]])
+          
+          # keep only clustered
+          simulation_pattern <- spatstat.geom::subset.ppp(simulation_pattern, species_code %in% c(2, 4))
           
         }
         

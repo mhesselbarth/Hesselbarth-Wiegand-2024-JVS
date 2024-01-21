@@ -31,28 +31,11 @@ foo_hpc <- function(input) {
   
   # results of species-habitat associations
   
-  # species 1
-  
-  # only pattern containing species 1
-  species_1 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 1)
-  
-  # randomize pattern using pattern reconstruction
-  random_species_1 <- shar::reconstruct_pattern(pattern = species_1, n_random = n_random,
-                                                max_runs = max_runs, method = "homo", 
-                                                no_change = no_change, verbose = FALSE)
-  
-  # get habitat associations
-  associations_species_1 <- shar::results_habitat_association(pattern = random_species_1, raster = simulation_habitat,
-                                                              verbose = FALSE)
-  
-  # count correct/false detections of species-habitat associations
-  detection_species_1 <- detect_habitat_associations(input = associations_species_1, 
-                                                     species_type = names_species[1])
-  
   # species 2
   
   # only pattern containing species 2
-  species_2 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 2)
+  species_2 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 2) |> 
+    spatstat.geom::unmark()
   
   # randomize pattern using pattern reconstruction
   random_species_2 <- shar::reconstruct_pattern(pattern = species_2, n_random = n_random,
@@ -60,35 +43,19 @@ foo_hpc <- function(input) {
                                                 no_change = no_change, verbose = FALSE)
   
   # get habitat associations
-  associations_species_2 <- shar::results_habitat_association(pattern = random_species_2, raster = simulation_habitat,
+  associations_species_2 <- shar::results_habitat_association(pattern = random_species_2, 
+                                                              raster = simulation_habitat,
                                                               verbose = FALSE)
   
   # count correct/false detections of species-habitat associations
   detection_species_2 <- detect_habitat_associations(input = associations_species_2, 
-                                                     species_type = names_species[2])
-  
-  # species 3
-  
-  # only pattern containing species 3
-  species_3 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 3)
-  
-  # randomize pattern using pattern reconstruction
-  random_species_3 <- shar::reconstruct_pattern(pattern = species_3, n_random = n_random,
-                                                max_runs = max_runs, method = "homo", 
-                                                no_change = no_change, verbose = FALSE)
-  
-  # get habitat associations
-  associations_species_3 <- shar::results_habitat_association(pattern = random_species_3, raster = simulation_habitat,
-                                                              verbose = FALSE)
-  
-  # count correct/false detections of species-habitat associations
-  detection_species_3 <- detect_habitat_associations(input = associations_species_3, 
-                                                     species_type = names_species[3])
+                                                     species_type = names_species[1])
   
   # species 4
   
   # only pattern containing species 4
-  species_4 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 4)
+  species_4 <- spatstat.geom::subset.ppp(simulation_pattern, species_code == 4) |> 
+    spatstat.geom::unmark()
   
   # randomize pattern using pattern reconstruction
   random_species_4 <- shar::reconstruct_pattern(pattern = species_4, n_random = n_random,
@@ -96,16 +63,16 @@ foo_hpc <- function(input) {
                                                 no_change = no_change, verbose = FALSE)
   
   # get habitat associations
-  associations_species_4 <- shar::results_habitat_association(pattern = random_species_4, raster = simulation_habitat,
+  associations_species_4 <- shar::results_habitat_association(pattern = random_species_4, 
+                                                              raster = simulation_habitat,
                                                               verbose = FALSE)
   
   # count correct/false detections of species-habitat associations
   detection_species_4 <- detect_habitat_associations(input = associations_species_4, 
-                                                     species_type = names_species[4])
+                                                     species_type = names_species[2])
   
   # combine results of current association strength to one data frame
-  dplyr::bind_rows("1" = detection_species_1, "2" = detection_species_2, 
-                   "3" = detection_species_3, "4" = detection_species_4, .id = "species") |> 
+  dplyr::bind_rows("2" = detection_species_2, "4" = detection_species_4, .id = "species") |> 
     dplyr::mutate(fract_dim = fract_dim, n_random = n_random, association_strength = association_strength, 
                   .before = species)
   
@@ -117,7 +84,7 @@ globals <- c("max_runs", "no_change", # reconstruct_pattern
              "detect_habitat_associations") # helper functions
 
 sbatch_recon <- rslurm::slurm_map(x = simulation_experiment_list, f = foo_hpc,
-                                  global_objects = globals, jobname = "pattern_recon_grad",
+                                  global_objects = globals, jobname = "pattern_recon_cluster",
                                   nodes = length(simulation_experiment_list), cpus_per_node = 1, 
                                   slurm_options = list("partition" = "medium",
                                                        "time" = "48:00:00", 

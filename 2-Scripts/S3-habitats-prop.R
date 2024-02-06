@@ -48,6 +48,11 @@ assoc_count <- purrr::map_dfr(simulation_experiment_list, function(i) {
   dplyr::summarise(n = dplyr::n(), .groups = "drop") |> 
   dplyr::mutate(y = 50)
 
+### Mean proportions ####
+
+habitats_rel <- dplyr::group_by(habitats_count, habitat, fract_dim) |> 
+  dplyr::summarise(mean = mean(rel_count))
+
 #### Create ggplot ###
 
 gg_habitats <- ggplot(data = habitats_count, aes(x = habitat, y = rel_count, col = habitat)) + 

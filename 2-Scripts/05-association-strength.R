@@ -53,7 +53,7 @@ dplyr::group_by(summarized_df, n_random) |>
 color_scale <- c("gamma" = "#df4e25", "torus" = "#007aa1",
                  "walk" = "#41b282", "reconstruction" = "#fcb252")
 
-color_alpha <- 0.15
+color_alpha <- 0.5
 
 size_base <- 12
 size_point <- 1.75

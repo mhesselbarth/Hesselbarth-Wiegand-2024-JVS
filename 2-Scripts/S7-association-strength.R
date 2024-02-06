@@ -55,7 +55,7 @@ dplyr::group_by(summarized_df, n_random) |>
 color_scale <- c("gamma" = "#df4e25", "torus" = "#007aa1",
                  "walk" = "#41b282", "reconstruction" = "#fcb252")
 
-color_alpha <- 0.15
+color_alpha <- 0.5
 
 size_base <- 12
 size_point <- 1.75
@@ -147,11 +147,17 @@ ggplot_correct_total <- cowplot::plot_grid(ggplot_correct_total, cowplot::get_le
 gg_gradient <- simulation_experiment_list[[25]]$habitat |> 
   terra::rast() |> 
   terra::as.data.frame(xy = TRUE) |> 
-  ggplot(aes(x = x, y = y, fill = factor(layer))) +
-  geom_raster() +
+  ggplot() +
+  geom_raster(aes(x = x, y = y, fill = factor(layer))) +
+  geom_point(data = as.data.frame(simulation_experiment_list[[25]]$pattern), 
+             aes(x = x, y = y, shape = factor(species_code)), size = 2.0) +
   scale_fill_manual(values = MetBrewer::met.brewer(name = "Demuth", n = 5, type = "discrete")) +
+  scale_shape_manual(name = "", values = c("1" = 1, "2" = 2, "3" = 3, "4" = 4),
+                     labels = c("1" = "Postive association (CSR)", "2" = "Postive association (cluster)",
+                                "3" = "Negative association (CSR)", "4" = "Negative association (cluster")) +
+  guides(fill = "none", shape = guide_legend(nrow = 2)) +
   theme_classic(base_size = size_base) + 
-  theme(aspect.ratio = 1, legend.position = "none", 
+  theme(aspect.ratio = 1, legend.position = "bottom", 
         axis.title = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), axis.line = element_blank(), 
         panel.border = element_rect(colour = "black", fill = NA, linewidth = 1.0))

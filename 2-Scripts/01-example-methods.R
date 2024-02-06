@@ -45,7 +45,7 @@ random_walk <- shar::randomize_raster(raster = simulation_landscape, n_random  =
 
 # reconstruct pattern
 pattern_recon <- shar::reconstruct_pattern(pattern = spatstat.geom::unmark(example_species), 
-                                           method = "cluster", n_random = 1, max_runs = 2500)
+                                           method = "cluster", n_random = 1, max_runs = 10000)
 
 #### Convert all to data.frames ####
 
@@ -65,9 +65,11 @@ example_species_df <- tibble::as_tibble(spatstat.geom::as.data.frame.ppp(example
 #### Setup ggplot globals ####
 
 # set point size
-size_point <- 0.65
+size_point <- 1.5
 
 size_base <- 10.0
+
+shape_point <- 1
 
 color_point <- "black"
 
@@ -75,7 +77,8 @@ color_point <- "black"
 
 ggplot_observed <- ggplot() +
   geom_raster(data = simulation_landscape_df, aes(x = x, y = y, fill = factor(layer))) +
-  geom_point(data = example_species_df, aes(x = x, y = y), size = size_point, color = color_point) +
+  geom_point(data = example_species_df, aes(x = x, y = y), size = size_point, color = color_point, 
+             shape = shape_point) +
   scale_fill_manual(values = MetBrewer::met.brewer(name = "Demuth", n = 5, type = "discrete")) +
   theme_classic(base_size = size_base) + 
   theme(aspect.ratio = 1, legend.position = "none",
@@ -85,7 +88,8 @@ ggplot_observed <- ggplot() +
 
 ggplot_gamma <- ggplot() +
   geom_raster(data = simulation_landscape_df, aes(x = x, y = y, fill = factor(layer))) +
-  geom_point(data = gamma_test_df, aes(x = x, y = y), size = size_point, color = color_point) +
+  geom_point(data = gamma_test_df, aes(x = x, y = y), size = size_point, color = color_point, 
+             shape = shape_point) +
   scale_fill_manual(values = MetBrewer::met.brewer(name = "Demuth", n = 5, type = "discrete")) +
   theme_classic(base_size = size_base) + 
   theme(aspect.ratio = 1, legend.position = "none",
@@ -95,7 +99,8 @@ ggplot_gamma <- ggplot() +
 
 ggplot_recon <- ggplot() +
   geom_raster(data = simulation_landscape_df, aes(x = x, y = y, fill = factor(layer))) +
-  geom_point(data = pattern_recon_df, aes(x = x, y = y), size = size_point, color = color_point) +
+  geom_point(data = pattern_recon_df, aes(x = x, y = y), size = size_point, color = color_point, 
+             shape = shape_point) +
   scale_fill_manual(values = MetBrewer::met.brewer(name = "Demuth", n = 5, type = "discrete")) +
   theme_classic(base_size = size_base) + 
   theme(aspect.ratio = 1, legend.position = "none",
@@ -105,7 +110,8 @@ ggplot_recon <- ggplot() +
 
 ggplot_torus <- ggplot() +
   geom_raster(data = torus_trans_df, aes(x = x, y = y, fill = factor(layer))) +
-  geom_point(data = example_species_df, aes(x = x, y = y), size = size_point, color = color_point) +
+  geom_point(data = example_species_df, aes(x = x, y = y), size = size_point, color = color_point, 
+             shape = shape_point) +
   scale_fill_manual(values = MetBrewer::met.brewer(name = "Demuth", n = 5, type = "discrete")) +
   theme_classic(base_size = size_base) + 
   theme(aspect.ratio = 1, legend.position = "none",
@@ -115,7 +121,8 @@ ggplot_torus <- ggplot() +
 
 ggplot_walk <- ggplot() +
   geom_raster(data = random_walk_df, aes(x = x, y = y, fill = factor(layer))) +
-  geom_point(data = example_species_df, aes(x = x, y = y), size = size_point, color = color_point) +
+  geom_point(data = example_species_df, aes(x = x, y = y), size = size_point, color = color_point, 
+             shape = shape_point) +
   scale_fill_manual(values = MetBrewer::met.brewer(name = "Demuth", n = 5, type = "discrete")) +
   theme_classic(base_size = size_base) + 
   theme(aspect.ratio = 1, legend.position = "none",
@@ -140,5 +147,6 @@ ggplot_total <- cowplot::plot_grid(ggplot_observed, ggplot_random, ncol = 2,
 
 ### Save ggplot ####
 
-suppoRt::save_ggplot(plot = ggplot_total, filename = "4-Figures/Fig-1.png", overwrite = FALSE, 
+suppoRt::save_ggplot(plot = ggplot_total, filename = "4-Figures/Fig-1.png", overwrite = T, 
                      dpi = dpi, height = height * 0.5, width = width, units = units)
+

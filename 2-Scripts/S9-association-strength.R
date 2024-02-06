@@ -55,7 +55,7 @@ dplyr::group_by(summarized_df, n_random) |>
 color_scale <- c("gamma" = "#df4e25", "torus" = "#007aa1",
                  "walk" = "#41b282", "reconstruction" = "#fcb252")
 
-color_alpha <- 0.15
+color_alpha <- 0.5
 
 size_base <- 12
 size_point <- 1.75
@@ -134,16 +134,22 @@ ggplot_correct_total <- cowplot::plot_grid(ggplot_correct_total, cowplot::get_le
 
 #### Plot pattern ####
 
+habitat_df <- simulation_experiment_list[[50]]$habitat |> 
+  terra::unwrap() |> 
+  terra::as.data.frame(xy = TRUE)
+
 gg_pattern <- as.data.frame(simulation_experiment_list[[50]]$pattern) |> 
   ggplot() + 
-  geom_point(aes(x = x, y = y, color = factor(species_code)), 
-             shape = 1, cex = 1) +
+  geom_raster(data = habitat_df, aes(x = x, y = y, fill = factor(layer))) +
+  geom_point(aes(x = x, y = y, shape = factor(species_code)), size = 2.0) +
   geom_polygon(data = as.data.frame(simulation_experiment_list[[1]]$pattern$window), 
                aes(x = x, y = y), fill = NA, color = "black") +
   # facet_wrap(. ~ species_code) +
   coord_equal() +
-  scale_color_manual(name = "Association type", values = c("2" = "#007895", "4" = "#e93c26"), 
-                     labels = c("2" = "postive", "4" = "negative")) + 
+  scale_fill_manual(values = MetBrewer::met.brewer(name = "Demuth", n = 5, type = "discrete")) +
+  scale_shape_manual(name = "", values = c("2" = 2, "4" = 4),
+                     labels = c("2" = "Postive association (cluster)", "4" = "Negative association (cluster)")) +
+  guides(fill = "none") +
   theme_void(base_size = size_base) + 
   theme(legend.position = "bottom", strip.text = element_blank())
 
@@ -180,3 +186,4 @@ suppoRt::save_ggplot(plot = gg_pattern, filename = "4-Figures/Fig-S9-1.png",
 suppoRt::save_ggplot(plot = ggplot_correct_total, filename = "4-Figures/Fig-S9-2.png", 
                      dpi = dpi, height = height * 2/3, width = width, units = units, 
                      overwrite = FALSE)
+

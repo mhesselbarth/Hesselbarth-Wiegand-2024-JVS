@@ -1,6 +1,5 @@
-<!-- badges: start -->
 [![DOI](https://img.shields.io/badge/DOI-10.1111/jvs.13243-blue.svg)](https://doi.org/10.1111/jvs.13243) 
-<!-- badges: end -->
+
 
 Code repository for all `R` scripts used in Hesselbarth, M.H.K., Wiegand, K., 2024. **A simulation study comparing common methods for analyzing species–habitat associations of plants**. Journal of Vegetation Science 35, e13243.
 
